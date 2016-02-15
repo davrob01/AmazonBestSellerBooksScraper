@@ -25,7 +25,6 @@ namespace AmazonBestSellers
 
             List<Task<List<Category>>> downloadTasks = new List<Task<List<Category>>>();
 
-            Categories.Add(rootCategory);
             for(int page = 1; page <= 5; page++)
             {
                 if(page == 1)
@@ -38,6 +37,7 @@ namespace AmazonBestSellers
                     downloadTasks.Add(rootCategory.RetrieveCategoryData(1, page));
                 }
             }
+            Categories.Add(rootCategory);
 
             while(downloadTasks.Count > 0)
             {
