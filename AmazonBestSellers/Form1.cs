@@ -32,11 +32,12 @@ namespace AmazonBestSellers
             btnStart.Enabled = false;
             var watch = Stopwatch.StartNew();
 
-            Thread thread = new Thread(new ThreadStart(WorkThreadFunction));
-            thread.Start();
+            Thread processingThread = new Thread(new ThreadStart(WorkThreadFunction));
+            processingThread.Priority = ThreadPriority.Highest;
+            processingThread.Start();
 
-            await Task.Factory.StartNew(() => refreshStatus());
-            
+            await Task.Run(() => refreshStatus());
+
             lblBooksValue.Text = Counter.BooksAdded.ToString();
 
             long time = watch.ElapsedMilliseconds / 1000;
@@ -49,13 +50,20 @@ namespace AmazonBestSellers
 
         private void refreshStatus()
         {
-            while (Counter.Finished != true)
+            try
             {
-                this.Invoke((MethodInvoker)delegate
+                while (Counter.Finished != true && !this.IsDisposed)
                 {
-                    lblBooksValue.Text = Counter.BooksAdded.ToString(); // runs on UI thread
-                    lblBooksValue.Refresh();
-                });
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        lblBooksValue.Text = Counter.BooksAdded.ToString(); // runs on UI thread
+                        lblBooksValue.Refresh();
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
             }
         }
 
