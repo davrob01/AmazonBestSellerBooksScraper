@@ -22,11 +22,11 @@ namespace AmazonBestSellers
 
         public async Task<List<Category>> RetrieveCategoryData(int qAboveFold, int qPage)
         {
-            List<Category> subCategories = new List<Category>();
-
             string url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1&isAboveTheFold={2}", URL, qPage, qAboveFold);
 
             string html = await DownloadHtmlPage(url);
+
+            List<Category> subCategories = new List<Category>();
 
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
 
@@ -58,11 +58,11 @@ namespace AmazonBestSellers
         }
         public async Task<List<Category>> RetrieveCategoryData(int qPage)
         {
-            List<Category> subCategories = new List<Category>();
-
             string url = string.Format("{0}?pg={1}", URL, qPage);
 
             string html = await DownloadHtmlPage(url);
+
+            List<Category> subCategories = new List<Category>();
 
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
 

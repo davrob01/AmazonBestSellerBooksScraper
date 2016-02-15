@@ -39,8 +39,8 @@ namespace AmazonBestSellers
         private async Task StartScrape()
         {
             //string url = "http://www.amazon.com/gp/bestsellers/books";
-            string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
-            //string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
+            //string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
+            string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
             Domain amazonUS = new Domain(url, "Books");
 
             await amazonUS.ProcessCategory();
