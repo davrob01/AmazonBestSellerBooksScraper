@@ -18,10 +18,10 @@ namespace AmazonBestSellers
         public static void Log(Exception ex)
         {
             StringBuilder strBuilder = new StringBuilder();
+            strBuilder.AppendLine();
             strBuilder.AppendLine(ex.GetType().Name);
             strBuilder.AppendLine(ex.Message);
             strBuilder.AppendLine(ex.StackTrace);
-            strBuilder.AppendLine();
 
             File.AppendAllText("log.txt", strBuilder.ToString());
         }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Net;
 
 namespace AmazonBestSellers
 {
@@ -21,7 +22,7 @@ namespace AmazonBestSellers
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            ServicePointManager.DefaultConnectionLimit = 20;
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
