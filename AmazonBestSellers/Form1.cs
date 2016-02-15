@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
 
 namespace AmazonBestSellers
 {
@@ -25,22 +26,53 @@ namespace AmazonBestSellers
             ServicePointManager.DefaultConnectionLimit = 30;
         }
 
-        private async void btnStart_Click(object sender, EventArgs e)
+        private void btnStart_Click(object sender, EventArgs e)
         {
+            panel2.Visible = false;
             btnStart.Enabled = false;
             var watch = Stopwatch.StartNew();
-            await StartScrape();
+
+            Thread thread = new Thread(new ThreadStart(WorkThreadFunction));
+            thread.Start();
+
+            while(Counter.Finished != true)
+            {
+                Thread.Sleep(250);
+                lblBooksValue.Text = Counter.BooksAdded.ToString();
+                this.Refresh();
+            }
+            lblBooksValue.Text = Counter.BooksAdded.ToString();
+
             long time = watch.ElapsedMilliseconds / 1000;
 
-            lblTimeValue.Text = time.ToString();
+            panel2.Visible = true;
+            lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
             btnStart.Enabled = true;
+            Counter.Reset();
+        }
+
+        public async void WorkThreadFunction()
+        {
+            try
+            {
+                // do any background work
+                await StartScrape();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+            }
+            finally
+            {
+                Counter.Finished = true;
+            }
         }
 
         private async Task StartScrape()
         {
             //string url = "http://www.amazon.com/gp/bestsellers/books";
-            string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
-            //string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
+            //string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
+            string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
             Domain amazonUS = new Domain(url, "Books");
 
             await amazonUS.ProcessCategory();

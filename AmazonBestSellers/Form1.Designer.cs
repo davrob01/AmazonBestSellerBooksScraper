@@ -30,9 +30,14 @@
         {
             this.btnStart = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.lblTime = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.lblComplete = new System.Windows.Forms.Label();
             this.lblTimeValue = new System.Windows.Forms.Label();
+            this.lblTime = new System.Windows.Forms.Label();
+            this.lblBooksValue = new System.Windows.Forms.Label();
+            this.lblBooks = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
@@ -48,29 +53,68 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
-            this.panel1.Controls.Add(this.lblTimeValue);
-            this.panel1.Controls.Add(this.lblTime);
+            this.panel1.Controls.Add(this.panel2);
+            this.panel1.Controls.Add(this.lblBooksValue);
+            this.panel1.Controls.Add(this.lblBooks);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(260, 126);
             this.panel1.TabIndex = 1;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.lblComplete);
+            this.panel2.Controls.Add(this.lblTimeValue);
+            this.panel2.Controls.Add(this.lblTime);
+            this.panel2.Location = new System.Drawing.Point(0, 55);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(163, 71);
+            this.panel2.TabIndex = 5;
+            this.panel2.Visible = false;
+            // 
+            // lblComplete
+            // 
+            this.lblComplete.AutoSize = true;
+            this.lblComplete.Location = new System.Drawing.Point(3, 18);
+            this.lblComplete.Name = "lblComplete";
+            this.lblComplete.Size = new System.Drawing.Size(95, 13);
+            this.lblComplete.TabIndex = 4;
+            this.lblComplete.Text = "Process Complete!";
+            // 
+            // lblTimeValue
+            // 
+            this.lblTimeValue.AutoSize = true;
+            this.lblTimeValue.Location = new System.Drawing.Point(98, 44);
+            this.lblTimeValue.Name = "lblTimeValue";
+            this.lblTimeValue.Size = new System.Drawing.Size(0, 13);
+            this.lblTimeValue.TabIndex = 1;
+            // 
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(3, 16);
+            this.lblTime.Location = new System.Drawing.Point(3, 44);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(83, 13);
             this.lblTime.TabIndex = 0;
             this.lblTime.Text = "Execution Time:";
             // 
-            // lblTimeValue
+            // lblBooksValue
             // 
-            this.lblTimeValue.AutoSize = true;
-            this.lblTimeValue.Location = new System.Drawing.Point(92, 16);
-            this.lblTimeValue.Name = "lblTimeValue";
-            this.lblTimeValue.Size = new System.Drawing.Size(0, 13);
-            this.lblTimeValue.TabIndex = 1;
+            this.lblBooksValue.AutoSize = true;
+            this.lblBooksValue.Location = new System.Drawing.Point(92, 20);
+            this.lblBooksValue.Name = "lblBooksValue";
+            this.lblBooksValue.Size = new System.Drawing.Size(13, 13);
+            this.lblBooksValue.TabIndex = 3;
+            this.lblBooksValue.Text = "0";
+            // 
+            // lblBooks
+            // 
+            this.lblBooks.AutoSize = true;
+            this.lblBooks.Location = new System.Drawing.Point(3, 20);
+            this.lblBooks.Name = "lblBooks";
+            this.lblBooks.Size = new System.Drawing.Size(77, 13);
+            this.lblBooks.TabIndex = 2;
+            this.lblBooks.Text = "Books Added: ";
             // 
             // Form1
             // 
@@ -80,10 +124,12 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnStart);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Amazon Best Sellers";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -94,6 +140,10 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblTimeValue;
         private System.Windows.Forms.Label lblTime;
+        private System.Windows.Forms.Label lblBooksValue;
+        private System.Windows.Forms.Label lblBooks;
+        private System.Windows.Forms.Label lblComplete;
+        private System.Windows.Forms.Panel panel2;
     }
 }
 
