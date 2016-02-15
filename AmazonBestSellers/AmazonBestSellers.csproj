@@ -61,6 +61,7 @@
     <Compile Include="GZipWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

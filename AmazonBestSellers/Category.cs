@@ -108,9 +108,28 @@ namespace AmazonBestSellers
         private async Task<string> DownloadHtmlPage(string url)
         {
             string text = null;
-            using (GZipWebClient gZipWebClient = new GZipWebClient())
+            int attempts = 0;
+            while (attempts < 5 && text == null)
             {
-                text = await gZipWebClient.DownloadStringTaskAsync(url);
+                try
+                {
+                    attempts++;
+                    using (GZipWebClient gZipWebClient = new GZipWebClient())
+                    {
+                        text = await gZipWebClient.DownloadStringTaskAsync(url);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (attempts == 1)
+                    {
+                        Logger.Log(ex);
+                    }
+                }
+                if (attempts == 5)
+                {
+                    throw new Exception("Attempts exceeded 5");
+                }
             }
             return text;
         }
