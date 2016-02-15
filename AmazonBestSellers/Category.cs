@@ -86,7 +86,7 @@ namespace AmazonBestSellers
 
             HtmlNode categoryElement = doc.GetElementbyId("zg_browseRoot");
 
-            HtmlNode lastUlElement = categoryElement.Descendants().Last(n => n.OriginalName == "ul");
+            HtmlNode lastUlElement = categoryElement.Descendants("ul").Last();
 
             bool hasSubCategories = ! lastUlElement.Descendants().Any(n => n.GetAttributeValue("class", "").Equals("zg_selected"));
 
