@@ -33,8 +33,8 @@ namespace AmazonBestSellers
                 }
                 else
                 {
-                    downloadTasks.Add(rootCategory.RetrieveCategoryData(0, page));
-                    downloadTasks.Add(rootCategory.RetrieveCategoryData(1, page));
+                    downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 0));
+                    downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 1));
                 }
             }
             Categories.Add(rootCategory);
@@ -59,8 +59,8 @@ namespace AmazonBestSellers
                             }
                             else
                             {
-                                downloadTasks.Add(category.RetrieveCategoryData(0, page));
-                                downloadTasks.Add(category.RetrieveCategoryData(1, page));
+                                downloadTasks.Add(category.RetrieveCategoryData(page, 0));
+                                downloadTasks.Add(category.RetrieveCategoryData(page, 1));
                             }
                         }
                     }
