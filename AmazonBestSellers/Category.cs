@@ -57,7 +57,7 @@ namespace AmazonBestSellers
                     {
                         if (attempts == 1)
                         {
-                            Logger.Log(ex);
+                            Logger.Log(string.Format("Error downloading page. Attemping to retry... URL: {0}", url), ex);
                         }
                     }
                     if (attempts == 5 && loaded == false)

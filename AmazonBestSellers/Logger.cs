@@ -9,6 +9,8 @@ namespace AmazonBestSellers
 {
     static class Logger
     {
+        private static object locker = new object();
+
         static Logger()
         {
             DateTime datetime = DateTime.Now;
@@ -22,7 +24,10 @@ namespace AmazonBestSellers
             strBuilder.AppendLine(message);
             strBuilder.AppendLine(FormatException(ex));
 
-            File.AppendAllText("log.txt", strBuilder.ToString());
+            lock (locker)
+            {
+                File.AppendAllText("log.txt", strBuilder.ToString());
+            }
         }
 
         public static void Log(Exception ex)
@@ -31,7 +36,10 @@ namespace AmazonBestSellers
             strBuilder.AppendLine();
             strBuilder.AppendLine(FormatException(ex));
 
-            File.AppendAllText("log.txt", strBuilder.ToString());
+            lock (locker)
+            {
+                File.AppendAllText("log.txt", strBuilder.ToString());
+            }
         }
 
         private static string FormatException(Exception ex)
