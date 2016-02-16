@@ -33,7 +33,7 @@ namespace AmazonBestSellers
 
                 doc.LoadHtml(html);
                 var root = doc.DocumentNode;
-                var titleNodes = root.Descendants().Where(n => n.GetAttributeValue("class", "").Equals("zg_title"));
+                var itemLinks = root.Descendants("a").Where(n => n.ParentNode.GetAttributeValue("class", "").Equals("zg_title"));
 
                 int rank = ((qPage - 1) * 20) + 1;
 
@@ -43,11 +43,11 @@ namespace AmazonBestSellers
                     // consider using the rank number field on the html page
                 }
 
-                foreach (HtmlNode node in titleNodes)
+                foreach (HtmlNode node in itemLinks)
                 {
-                    string link = node.FirstChild.GetAttributeValue("href", "").Trim();
+                    string link = node.GetAttributeValue("href", "").Trim();
                     string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split(new string[] { "/" }, StringSplitOptions.None)[0];
-                    string title = node.FirstChild.InnerText;
+                    string title = node.InnerText;
                     Book book = new Book(rank, title, ISBN, link);
 
                     Books.Add(book);
@@ -76,15 +76,15 @@ namespace AmazonBestSellers
 
                 doc.LoadHtml(html);
                 var root = doc.DocumentNode;
-                var titleNodes = root.Descendants().Where(n => n.GetAttributeValue("class", "").Equals("zg_title"));
+                var itemLinks = root.Descendants("a").Where(n => n.ParentNode.GetAttributeValue("class", "").Equals("zg_title"));
 
                 int rank = 1;
 
-                foreach (HtmlNode node in titleNodes)
+                foreach (HtmlNode node in itemLinks)
                 {
-                    string link = node.FirstChild.GetAttributeValue("href", "").Trim();
+                    string link = node.GetAttributeValue("href", "").Trim();
                     string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split(new string[] { "/" }, StringSplitOptions.None)[0];
-                    string title = node.FirstChild.InnerText;
+                    string title = node.InnerText;
                     Book book = new Book(rank, title, ISBN, link);
 
                     Books.Add(book);
