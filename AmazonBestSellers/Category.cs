@@ -51,7 +51,7 @@ namespace AmazonBestSellers
                     Book book = new Book(rank, title, ISBN, link);
 
                     Books.Add(book);
-                    Counter.BooksAdded++;
+                    Counter.IncrementBooksAdded();
 
                     rank++;
                 }
@@ -88,7 +88,7 @@ namespace AmazonBestSellers
                     Book book = new Book(rank, title, ISBN, link);
 
                     Books.Add(book);
-                    Counter.BooksAdded++;
+                    Counter.IncrementBooksAdded();
 
                     rank++;
                 }
