@@ -86,10 +86,11 @@ namespace AmazonBestSellers
 
         private async Task StartScrape()
         {
-            //string url = "http://www.amazon.com/gp/bestsellers/books";
-            string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
+            string url = "http://www.amazon.com/gp/bestsellers/books";
+            //string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
             //string url = "http://www.amazon.com/Best-Sellers-Books-Engineering-Transportation/zgbs/books/173507/ref=zg_bs_nav_b_1_b";
             //string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
+            //string url = "http://www.amazon.co.jp/gp/bestsellers/english-books/2604956051/ref=zg_bs_nav_fb_1_fb";
             Domain amazonUS = new Domain(url, "Books");
 
             await amazonUS.ProcessCategory();
