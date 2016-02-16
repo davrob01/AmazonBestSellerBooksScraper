@@ -67,7 +67,6 @@ namespace AmazonBestSellers
                     Categories.AddRange(subCategories);
                 }
             }
-
         }
     }
 }
