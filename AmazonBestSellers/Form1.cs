@@ -23,7 +23,7 @@ namespace AmazonBestSellers
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ServicePointManager.DefaultConnectionLimit = 30;
+            ServicePointManager.DefaultConnectionLimit = 100;
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -32,13 +32,25 @@ namespace AmazonBestSellers
             btnStart.Enabled = false;
             var watch = Stopwatch.StartNew();
 
-            Thread processingThread = new Thread(new ThreadStart(WorkThreadFunction));
-            processingThread.Priority = ThreadPriority.Highest;
-            processingThread.Start();
+            string url = "http://www.amazon.com/gp/bestsellers/books";
+            string url2 = "http://www.amazon.co.jp/gp/bestsellers/english-books/";
+            //string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
+            //string url = "http://www.amazon.com/Best-Sellers-Books-Engineering-Transportation/zgbs/books/173507/ref=zg_bs_nav_b_1_b";
+            //string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
+            //string url = "http://www.amazon.co.jp/gp/bestsellers/english-books/2604956051/ref=zg_bs_nav_fb_1_fb";
+
+            Thread USA_Thread = new Thread(() => WorkThreadFunction(url, "US Books"));
+            USA_Thread.Priority = ThreadPriority.Highest;
+            USA_Thread.Start();
+
+            Thread JPN_Thread = new Thread(() => WorkThreadFunction(url2, "JPN Books"));
+            JPN_Thread.Priority = ThreadPriority.Highest;
+            JPN_Thread.Start();
 
             await Task.Run(() => refreshStatus());
 
-            processingThread.Join(); // make sure thread is completely finished
+            USA_Thread.Join(); // make sure thread is completely finished
+            JPN_Thread.Join(); // make sure thread is completely finished
 
             lblBooksValue.Text = Counter.BooksAdded.ToString();
 
@@ -54,7 +66,7 @@ namespace AmazonBestSellers
         {
             try
             {
-                while (Counter.Finished != true && !this.IsDisposed)
+                while (Counter.Finished < 2 && !this.IsDisposed)
                 {
                     this.Invoke((MethodInvoker)delegate
                     {
@@ -69,12 +81,12 @@ namespace AmazonBestSellers
             }
         }
 
-        public async void WorkThreadFunction()
+        public async void WorkThreadFunction(string url, string name)
         {
             try
             {
                 // do any background work
-                await StartScrape();
+                await StartScrape(url, name);
             }
             catch (Exception ex)
             {
@@ -82,31 +94,35 @@ namespace AmazonBestSellers
             }
             finally
             {
-                Counter.Finished = true;
+                Counter.IncrementFinished();
             }
         }
 
-        private async Task StartScrape()
+        private async Task StartScrape(string url, string name)
         {
-            //string url = "http://www.amazon.com/gp/bestsellers/books";
-            string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
-            //string url = "http://www.amazon.com/Best-Sellers-Books-Engineering-Transportation/zgbs/books/173507/ref=zg_bs_nav_b_1_b";
-            //string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
-            //string url = "http://www.amazon.co.jp/gp/bestsellers/english-books/2604956051/ref=zg_bs_nav_fb_1_fb";
-            Domain amazonUS = new Domain(url, "Books");
+            Domain domain = new Domain(url, name);
 
-            await amazonUS.ProcessCategory();
+            await domain.ProcessCategory();
 
-            using (StreamWriter writer = new StreamWriter("output.csv"))
+            try
             {
-                writer.WriteLine("Category,Rank,ISBN,Title");
-                foreach (Category category in amazonUS.Categories.OrderBy(x => x.Name))
+                using (StreamWriter writer = new StreamWriter(string.Format("{0}.csv", name)))
                 {
-                    foreach (Book book in category.Books.OrderBy(x => x.Rank))
+                    writer.WriteLine("Category,Rank,ISBN,Title");
+                    IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
+                    foreach (Category category in categoriesByName)
                     {
-                        writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, book.Rank, book.ISBN, book.Title);
+                        IEnumerable<Book> booksByRank = category.Books.OrderBy(x => x.Rank);
+                        foreach (Book book in booksByRank)
+                        {
+                            writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, book.Rank, book.ISBN, book.Title);
+                        }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                Logger.Log(string.Format("Error creating output file for {0}", name), ex);
             }
         }
     }

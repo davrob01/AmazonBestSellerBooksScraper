@@ -21,51 +21,58 @@ namespace AmazonBestSellers
 
         public async Task ProcessCategory()
         {
-            Category rootCategory = new Category(RootCategoryName, URL);
-
-            List<Task<List<Category>>> downloadTasks = new List<Task<List<Category>>>();
-
-            for(int page = 1; page <= 5; page++)
+            try
             {
-                if(page == 1)
+                Category rootCategory = new Category(RootCategoryName, URL);
+
+                List<Task<List<Category>>> downloadTasks = new List<Task<List<Category>>>();
+
+                for(int page = 1; page <= 5; page++)
                 {
-                    downloadTasks.Add(rootCategory.RetrieveCategoryData(page));
-                }
-                else
-                {
-                    downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 0));
-                    downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 1));
-                }
-            }
-            Categories.Add(rootCategory);
-
-            while(downloadTasks.Count > 0)
-            {
-                Task<List<Category>> firstFinishedTask = await Task<List<Category>>.WhenAny(downloadTasks);
-
-                downloadTasks.Remove(firstFinishedTask);
-
-                List<Category> subCategories = firstFinishedTask.Result;
-
-                if(subCategories.Count > 0)
-                {
-                    for (int page = 1; page <= 5; page++)
+                    if(page == 1)
                     {
-                        foreach (Category category in subCategories)
+                        downloadTasks.Add(rootCategory.RetrieveCategoryData(page));
+                    }
+                    else
+                    {
+                        downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 0));
+                        downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 1));
+                    }
+                }
+                Categories.Add(rootCategory);
+
+                while(downloadTasks.Count > 0)
+                {
+                    Task<List<Category>> firstFinishedTask = await Task<List<Category>>.WhenAny(downloadTasks);
+
+                    downloadTasks.Remove(firstFinishedTask);
+
+                    List<Category> subCategories = firstFinishedTask.Result;
+
+                    if(subCategories.Count > 0)
+                    {
+                        for (int page = 1; page <= 5; page++)
                         {
-                            if (page == 1)
+                            foreach (Category category in subCategories)
                             {
-                                downloadTasks.Add(category.RetrieveCategoryData(page));
-                            }
-                            else
-                            {
-                                downloadTasks.Add(category.RetrieveCategoryData(page, 0));
-                                downloadTasks.Add(category.RetrieveCategoryData(page, 1));
+                                if (page == 1)
+                                {
+                                    downloadTasks.Add(category.RetrieveCategoryData(page));
+                                }
+                                else
+                                {
+                                    downloadTasks.Add(category.RetrieveCategoryData(page, 0));
+                                    downloadTasks.Add(category.RetrieveCategoryData(page, 1));
+                                }
                             }
                         }
+                        Categories.AddRange(subCategories);
                     }
-                    Categories.AddRange(subCategories);
                 }
+            }
+            catch(Exception ex)
+            {
+                Logger.Log(string.Format("Error retrieving categories for {0}", RootCategoryName), ex);
             }
         }
     }

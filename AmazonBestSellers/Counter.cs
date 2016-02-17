@@ -17,21 +17,32 @@ namespace AmazonBestSellers
                 return _booksAdded;
             }
         }
-        public static bool Finished { get; set; }
+        private static int _finished;
+        public static int Finished
+        {
+            get
+            {
+                return _finished;
+            }
+        }
 
         static Counter()
         {
-            Finished = false;
+            _finished = 0;
             _booksAdded = 0;
         }
         public static void Reset()
         {
-            Finished = false;
+            _finished = 0;
             _booksAdded = 0;
         }
         public static void IncrementBooksAdded()
         {
             Interlocked.Increment(ref _booksAdded);
+        }
+        public static void IncrementFinished()
+        {
+            Interlocked.Increment(ref _finished);
         }
     }
 }
