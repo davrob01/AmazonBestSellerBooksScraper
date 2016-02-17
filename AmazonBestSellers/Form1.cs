@@ -23,7 +23,10 @@ namespace AmazonBestSellers
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ServicePointManager.DefaultConnectionLimit = 100;
+            ServicePoint amazonUS = ServicePointManager.FindServicePoint(new Uri("http://www.amazon.com"));
+            amazonUS.ConnectionLimit = 100;
+            ServicePoint amazonJPN = ServicePointManager.FindServicePoint(new Uri("http://www.amazon.co.jp"));
+            amazonJPN.ConnectionLimit = 100;
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -32,12 +35,12 @@ namespace AmazonBestSellers
             btnStart.Enabled = false;
             var watch = Stopwatch.StartNew();
 
-            string url = "http://www.amazon.com/gp/bestsellers/books";
-            string url2 = "http://www.amazon.co.jp/gp/bestsellers/english-books/";
-            //string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
+            //string url = "http://www.amazon.com/gp/bestsellers/books";
+            //string url2 = "http://www.amazon.co.jp/gp/bestsellers/english-books/";
+            string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
             //string url = "http://www.amazon.com/Best-Sellers-Books-Engineering-Transportation/zgbs/books/173507/ref=zg_bs_nav_b_1_b";
             //string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
-            //string url = "http://www.amazon.co.jp/gp/bestsellers/english-books/2604956051/ref=zg_bs_nav_fb_1_fb";
+            string url2 = "http://www.amazon.co.jp/gp/bestsellers/english-books/2604956051/ref=zg_bs_nav_fb_1_fb";
 
             Thread USA_Thread = new Thread(() => WorkThreadFunction(url, "US Books"));
             USA_Thread.Priority = ThreadPriority.Highest;
