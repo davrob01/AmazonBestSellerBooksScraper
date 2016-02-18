@@ -76,7 +76,7 @@ namespace AmazonBestSellers
             {
                 int index = i;
                 servicePoints[index] = ServicePointManager.FindServicePoint(new Uri(urls[index, 0]));
-                servicePoints[index].ConnectionLimit = 10;
+                servicePoints[index].ConnectionLimit = 5;
 
                 string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
 
@@ -85,7 +85,7 @@ namespace AmazonBestSellers
                 threads[index].Start();
             }
 
-            await Task.Run(() => refreshStatus());
+            await Task.Run(() => refreshStatus(count));
 
             foreach(Thread thread in threads)
             {
@@ -105,11 +105,11 @@ namespace AmazonBestSellers
             Counter.Reset();
         }
 
-        private void refreshStatus()
+        private void refreshStatus(int numberOfThreads)
         {
             try
             {
-                while (Counter.Finished < 2 && !this.IsDisposed)
+                while (Counter.Finished < numberOfThreads && !this.IsDisposed)
                 {
                     this.Invoke((MethodInvoker)delegate
                     {
