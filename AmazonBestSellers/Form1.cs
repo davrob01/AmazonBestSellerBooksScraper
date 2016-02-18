@@ -23,10 +23,13 @@ namespace AmazonBestSellers
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            /*
             ServicePoint amazonUS = ServicePointManager.FindServicePoint(new Uri("http://www.amazon.com"));
-            amazonUS.ConnectionLimit = 100;
+            amazonUS.ConnectionLimit = 10;
             ServicePoint amazonJPN = ServicePointManager.FindServicePoint(new Uri("http://www.amazon.co.jp"));
-            amazonJPN.ConnectionLimit = 100;
+            amazonJPN.ConnectionLimit = 10;
+            */
+            ServicePointManager.DefaultConnectionLimit = 2;
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -35,6 +38,8 @@ namespace AmazonBestSellers
             btnStart.Enabled = false;
             var watch = Stopwatch.StartNew();
 
+            /* Test code */
+            /*
             //string url = "http://www.amazon.com/gp/bestsellers/books";
             //string url2 = "http://www.amazon.co.jp/gp/bestsellers/english-books/";
             string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
@@ -49,11 +54,46 @@ namespace AmazonBestSellers
             Thread JPN_Thread = new Thread(() => WorkThreadFunction(url2, "JPN Books"));
             JPN_Thread.Priority = ThreadPriority.Highest;
             JPN_Thread.Start();
+            */
+            /* Real code */
+
+            string[,] urls = new string[,]{
+                {"http://www.amazon.com", "/best-sellers-books-Amazon/zgbs/books/", "US Books"},
+                {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/", "JPN Books"},
+                {"http://www.amazon.co.uk", "/gp/bestsellers/books/", "UK Books"},
+                {"http://www.amazon.it", "/gp/bestsellers/books/", "IT Books"},
+                {"http://www.amazon.fr", "/gp/bestsellers/english-books/", "FR Books"},
+                {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/", "DE Books"},
+                {"http://www.amazon.es", "/gp/bestsellers/foreign-books/", "ES Books"}
+            };
+
+            int count = urls.GetLength(0);
+
+            Thread[] threads = new Thread[count];
+            ServicePoint[] servicePoints = new ServicePoint[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                int index = i;
+                servicePoints[index] = ServicePointManager.FindServicePoint(new Uri(urls[index, 0]));
+                servicePoints[index].ConnectionLimit = 10;
+
+                string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
+
+                threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2]));
+                threads[index].Priority = ThreadPriority.Highest;
+                threads[index].Start();
+            }
 
             await Task.Run(() => refreshStatus());
 
-            USA_Thread.Join(); // make sure thread is completely finished
-            JPN_Thread.Join(); // make sure thread is completely finished
+            foreach(Thread thread in threads)
+            {
+                thread.Join();
+            }
+
+            //USA_Thread.Join(); // make sure thread is completely finished
+            //JPN_Thread.Join(); // make sure thread is completely finished
 
             lblBooksValue.Text = Counter.BooksAdded.ToString();
 
