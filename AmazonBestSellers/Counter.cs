@@ -36,9 +36,9 @@ namespace AmazonBestSellers
             _finished = 0;
             _booksAdded = 0;
         }
-        public static void IncrementBooksAdded()
+        public static void IncrementBooksAdded(int newBooks)
         {
-            Interlocked.Increment(ref _booksAdded);
+            Interlocked.Add(ref _booksAdded, newBooks);
         }
         public static void IncrementFinished()
         {

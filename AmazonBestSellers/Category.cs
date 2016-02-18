@@ -13,6 +13,7 @@ namespace AmazonBestSellers
         public string Name { get; set; }
         public string URL { get; set; }
         public List<Book> Books { get; set; }
+        private static object locker = new object();
 
         public Category(string name, string url)
         {
@@ -80,6 +81,8 @@ namespace AmazonBestSellers
                     }
                 }
 
+                List<Book> tempBooks = new List<Book>();
+
                 foreach (HtmlNode node in itemLinks)
                 {
                     string link = node.GetAttributeValue("href", "").Trim();
@@ -87,12 +90,23 @@ namespace AmazonBestSellers
                     string title = node.InnerText;
                     Book book = new Book(rank, title, ISBN, link);
 
-                    Books.Add(book);
-                    Counter.IncrementBooksAdded();
+                    tempBooks.Add(book);
 
                     rank++;
                 }
-
+                lock (locker)
+                {
+                    Books.AddRange(tempBooks); // since we are threading, we lock the Books property. JUST in case!
+                }
+                Counter.IncrementBooksAdded(tempBooks.Count);
+                /*
+                // this code checks for missing books. Amazon will sometimes incorrectly deliver a page in which there will be a rank number but no item.
+                List<HtmlNode> rankDivs = root.Descendants("span").Where(n => n.GetAttributeValue("class", "").Equals("zg_rankNumber")).ToList<HtmlNode>();
+                if(rankDivs.Count != tempBooks.Count)
+                {
+                    System.Diagnostics.Debug.WriteLine("Missing book(s) at " + url);
+                }
+                */
                 if(qPage == 1) // check for subcategories if page is 1
                 {
                     HtmlNode categoryElement = doc.GetElementbyId("zg_browseRoot");
