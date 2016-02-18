@@ -48,6 +48,7 @@ namespace AmazonBestSellers
                     downloadTasks.Remove(firstFinishedTask);
 
                     List<Category> subCategories = firstFinishedTask.Result;
+                    firstFinishedTask.Dispose();
 
                     if(subCategories.Count > 0)
                     {
