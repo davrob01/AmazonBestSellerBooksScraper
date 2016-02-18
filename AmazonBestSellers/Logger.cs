@@ -9,12 +9,16 @@ namespace AmazonBestSellers
 {
     static class Logger
     {
+        private const string fileName = "log.txt";
         private static object locker = new object();
 
         static Logger()
         {
             DateTime datetime = DateTime.Now;
-            File.WriteAllText("log.txt", string.Format("****** Log for {0} {1} *******", datetime.ToLongDateString(), datetime.ToLongTimeString()));
+            StringBuilder heading = new StringBuilder();
+            heading.AppendFormat("********** Log for {0} {1} **********", datetime.ToLongDateString(), datetime.ToLongTimeString());
+            heading.AppendLine();
+            File.WriteAllText(fileName, heading.ToString());
         }
 
         public static void Log(string message, Exception ex)
@@ -22,11 +26,11 @@ namespace AmazonBestSellers
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.AppendLine();
             strBuilder.AppendLine(message);
-            strBuilder.AppendLine(FormatException(ex));
+            strBuilder.Append(FormatException(ex));
 
             lock (locker)
             {
-                File.AppendAllText("log.txt", strBuilder.ToString());
+                File.AppendAllText(fileName, strBuilder.ToString());
             }
         }
 
@@ -34,11 +38,11 @@ namespace AmazonBestSellers
         {
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.AppendLine();
-            strBuilder.AppendLine(FormatException(ex));
+            strBuilder.Append(FormatException(ex));
 
             lock (locker)
             {
-                File.AppendAllText("log.txt", strBuilder.ToString());
+                File.AppendAllText(fileName, strBuilder.ToString());
             }
         }
 
