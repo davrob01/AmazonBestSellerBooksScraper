@@ -23,85 +23,65 @@ namespace AmazonBestSellers
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            /*
-            ServicePoint amazonUS = ServicePointManager.FindServicePoint(new Uri("http://www.amazon.com"));
-            amazonUS.ConnectionLimit = 10;
-            ServicePoint amazonJPN = ServicePointManager.FindServicePoint(new Uri("http://www.amazon.co.jp"));
-            amazonJPN.ConnectionLimit = 10;
-            */
-            ServicePointManager.DefaultConnectionLimit = 2;
+            //ServicePointManager.DefaultConnectionLimit = 2;
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
             panel2.Visible = false;
-            btnStart.Enabled = false;
-            var watch = Stopwatch.StartNew();
-
-            /* Test code */
-            /*
-            //string url = "http://www.amazon.com/gp/bestsellers/books";
-            //string url2 = "http://www.amazon.co.jp/gp/bestsellers/english-books/";
-            string url = "http://www.amazon.com/Best-Sellers-Books-Arts-Photography/zgbs/books/1/ref=zg_bs_unv_b_2_173508_1";
-            //string url = "http://www.amazon.com/Best-Sellers-Books-Engineering-Transportation/zgbs/books/173507/ref=zg_bs_nav_b_1_b";
-            //string url = "http://www.amazon.com/Best-Sellers-Books-Architectural-Buildings/zgbs/books/266162/ref=zg_bs_nav_b_3_173508";
-            string url2 = "http://www.amazon.co.jp/gp/bestsellers/english-books/2604956051/ref=zg_bs_nav_fb_1_fb";
-
-            Thread USA_Thread = new Thread(() => WorkThreadFunction(url, "US Books"));
-            USA_Thread.Priority = ThreadPriority.Highest;
-            USA_Thread.Start();
-
-            Thread JPN_Thread = new Thread(() => WorkThreadFunction(url2, "JPN Books"));
-            JPN_Thread.Priority = ThreadPriority.Highest;
-            JPN_Thread.Start();
-            */
-            /* Real code */
-
-            string[,] urls = new string[,]{
-                {"http://www.amazon.com", "/best-sellers-books-Amazon/zgbs/books/", "US Books"},
-                {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/", "JPN Books"},
-                {"http://www.amazon.co.uk", "/gp/bestsellers/books/", "UK Books"},
-                {"http://www.amazon.it", "/gp/bestsellers/books/", "IT Books"},
-                {"http://www.amazon.fr", "/gp/bestsellers/english-books/", "FR Books"},
-                {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/", "DE Books"},
-                {"http://www.amazon.es", "/gp/bestsellers/foreign-books/", "ES Books"}
-            };
-
-            int count = urls.GetLength(0);
-
-            Thread[] threads = new Thread[count];
-            ServicePoint[] servicePoints = new ServicePoint[count];
-
-            for (int i = 0; i < count; i++)
+            DisableButtons();
+            try
             {
-                int index = i;
-                servicePoints[index] = ServicePointManager.FindServicePoint(new Uri(urls[index, 0]));
-                servicePoints[index].ConnectionLimit = 5;
+                var watch = Stopwatch.StartNew();
 
-                string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
+                string[,] urls = new string[,]{
+                    {"http://www.amazon.com", "/best-sellers-books-Amazon/zgbs/books/", "US Books"},
+                    {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/", "JPN Books"},
+                    {"http://www.amazon.co.uk", "/gp/bestsellers/books/", "UK Books"},
+                    {"http://www.amazon.it", "/gp/bestsellers/books/", "IT Books"},
+                    {"http://www.amazon.fr", "/gp/bestsellers/english-books/", "FR Books"},
+                    {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/", "DE Books"},
+                    {"http://www.amazon.es", "/gp/bestsellers/foreign-books/", "ES Books"}
+                };
 
-                threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2]));
-                threads[index].Priority = ThreadPriority.Highest;
-                threads[index].Start();
+                int count = urls.GetLength(0);
+
+                Thread[] threads = new Thread[count];
+                ServicePoint[] servicePoints = new ServicePoint[count];
+
+                for (int i = 0; i < count; i++)
+                {
+                    int index = i;
+                    servicePoints[index] = ServicePointManager.FindServicePoint(new Uri(urls[index, 0]));
+                    servicePoints[index].ConnectionLimit = 5;
+
+                    string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
+
+                    threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2]));
+                    threads[index].Priority = ThreadPriority.Highest;
+                    threads[index].Start();
+                }
+
+                await Task.Run(() => refreshStatus(count));
+
+                foreach (Thread thread in threads)
+                {
+                    thread.Join();
+                }
+
+                lblBooksValue.Text = Counter.BooksAdded.ToString();
+
+                long time = watch.ElapsedMilliseconds / 1000;
+
+                panel2.Visible = true;
+                lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
             }
-
-            await Task.Run(() => refreshStatus(count));
-
-            foreach(Thread thread in threads)
+            catch (Exception ex)
             {
-                thread.Join();
+                Logger.Log("Error in UI thread", ex);
+                MessageBox.Show("An Error has occured");
             }
-
-            //USA_Thread.Join(); // make sure thread is completely finished
-            //JPN_Thread.Join(); // make sure thread is completely finished
-
-            lblBooksValue.Text = Counter.BooksAdded.ToString();
-
-            long time = watch.ElapsedMilliseconds / 1000;
-
-            panel2.Visible = true;
-            lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
-            btnStart.Enabled = true;
+            EnableButtons();
             Counter.Reset();
         }
 
@@ -167,6 +147,82 @@ namespace AmazonBestSellers
             {
                 Logger.Log(string.Format("Error creating output file for {0}", name), ex);
             }
+        }
+
+        private async void btnTest_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = false;
+            DisableButtons();
+
+            DialogResult dialogResult = MessageBox.Show("This test will just get books from a subcateogory of each domain. Not all the books will be in the output files. Continue?", "Test Run", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                try
+                {
+                    var watch = Stopwatch.StartNew();
+
+                    string[,] urls = new string[,]{
+                        {"http://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books"},
+                        {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books"},
+                        {"http://www.amazon.co.uk", "/Best-Sellers-Books-Sports-Hobbies-Games/zgbs/books/55/", "UK Books"},
+                        {"http://www.amazon.it", "/gp/bestsellers/books/508745031/", "IT Books"},
+                        {"http://www.amazon.fr", "/gp/bestsellers/english-books/80179011/", "FR Books"},
+                        {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/65108011/", "DE Books"},
+                        {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books"}
+                    };
+
+                    int count = urls.GetLength(0);
+
+                    Thread[] threads = new Thread[count];
+                    ServicePoint[] servicePoints = new ServicePoint[count];
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        int index = i;
+                        servicePoints[index] = ServicePointManager.FindServicePoint(new Uri(urls[index, 0]));
+                        servicePoints[index].ConnectionLimit = 5;
+
+                        string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
+
+                        threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2]));
+                        threads[index].Priority = ThreadPriority.Highest;
+                        threads[index].Start();
+                    }
+
+                    await Task.Run(() => refreshStatus(count));
+
+                    foreach (Thread thread in threads)
+                    {
+                        thread.Join();
+                    }
+
+                    lblBooksValue.Text = Counter.BooksAdded.ToString();
+
+                    long time = watch.ElapsedMilliseconds / 1000;
+
+                    panel2.Visible = true;
+                    lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
+                    Counter.Reset();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Error in UI thread", ex);
+                    MessageBox.Show("An Error has occured");
+                }
+            }
+            EnableButtons();
+            Counter.Reset();
+        }
+
+        private void DisableButtons()
+        {
+            btnStart.Enabled = false;
+            btnTest.Enabled = false;
+        }
+        private void EnableButtons()
+        {
+            btnStart.Enabled = true;
+            btnTest.Enabled = true;
         }
     }
 }

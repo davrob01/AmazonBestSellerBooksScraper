@@ -36,6 +36,7 @@
             this.lblTime = new System.Windows.Forms.Label();
             this.lblBooksValue = new System.Windows.Forms.Label();
             this.lblBooks = new System.Windows.Forms.Label();
+            this.btnTest = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -116,11 +117,22 @@
             this.lblBooks.TabIndex = 2;
             this.lblBooks.Text = "Books Added: ";
             // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(197, 218);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(75, 23);
+            this.btnTest.TabIndex = 2;
+            this.btnTest.Text = "Test Run";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.btnTest);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnStart);
             this.Name = "Form1";
@@ -144,6 +156,7 @@
         private System.Windows.Forms.Label lblBooks;
         private System.Windows.Forms.Label lblComplete;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btnTest;
     }
 }
 
