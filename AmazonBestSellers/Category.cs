@@ -86,7 +86,7 @@ namespace AmazonBestSellers
                 foreach (HtmlNode node in itemLinks)
                 {
                     string link = node.GetAttributeValue("href", "").Trim();
-                    string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split(new string[] { "/" }, StringSplitOptions.None)[0];
+                    string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
                     string title = node.InnerText;
                     Book book = new Book(rank, title, ISBN, link);
 
