@@ -13,7 +13,7 @@ namespace AmazonBestSellers
         private static int connectionsPerDomain;
         private static List<ServicePoint> servicePoints;
         private static object locker = new object();
-        private const int maxConnections = 300;
+        private const int maxConnections = 100;
  
         static ConnectionManager()
         {
@@ -24,7 +24,7 @@ namespace AmazonBestSellers
             //ServicePointManager.DefaultConnectionLimit = 1000;
 
             servicePoints = new List<ServicePoint>();
-            connectionsPerDomain = 150;
+            connectionsPerDomain = 40;
         }
 
         public static void AddConnection(Uri uri)

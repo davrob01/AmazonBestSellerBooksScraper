@@ -12,7 +12,7 @@ namespace AmazonBestSellers
         protected override WebRequest GetWebRequest(Uri address)
         {
             HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-            //request.ReadWriteTimeout = 10000;
+            request.ReadWriteTimeout = 20000;
             request.Headers.Add("Accept-Encoding", "gzip,deflate");
             request.Headers.Add("Accept-Language", "en-US,en;q=0.8");
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36";

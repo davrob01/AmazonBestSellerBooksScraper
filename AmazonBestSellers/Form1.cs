@@ -146,11 +146,14 @@ namespace AmazonBestSellers
                         IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
                         foreach (Category category in categoriesByName)
                         {
-                            IEnumerable<Book> booksByRank = category.Books.OrderBy(x => x.Rank);
-                            foreach (Book book in booksByRank)
+                            for (int index = 0; index < 100; index++ )
                             {
-                                writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, book.Rank, book.ISBN, book.Title);
-                                writerISBN.WriteLine(book.ISBN);
+                                Book currentBook = category.Books[index];
+                                if (currentBook != null)
+                                {
+                                    writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, index + 1, currentBook.ISBN, currentBook.Title);
+                                    writerISBN.WriteLine(currentBook.ISBN);
+                                }
                             }
                         }
                     }

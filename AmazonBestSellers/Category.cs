@@ -13,14 +13,14 @@ namespace AmazonBestSellers
     {
         public string Name { get; set; }
         public string URL { get; set; }
-        public ConcurrentBag<Book> Books {get; set;}
+        public Book[] Books { get; set;}
         private static object locker = new object();
 
         public Category(string name, string url)
         {
             Name = name;
             URL = url;
-            Books = new ConcurrentBag<Book>();
+            Books = new Book[100]; // this assumes there are never more than 100 books
         }
 
         public async Task<List<Category>> RetrieveCategoryData(int qPage, int? qAboveFold = null)
@@ -90,7 +90,7 @@ namespace AmazonBestSellers
                     string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
                     string title = node.InnerText;
 
-                    Books.Add(new Book(rank, title, ISBN, link));
+                    Books[rank - 1] = new Book(title, ISBN, link);
                     tempBooks++;
 
                     rank++;
