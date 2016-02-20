@@ -18,8 +18,8 @@ namespace AmazonBestSellers
         static ConnectionManager()
         {
             // establish general settings
-            ServicePointManager.SetTcpKeepAlive(true, 10000, 10000);
-            ServicePointManager.MaxServicePointIdleTime = 10000;
+            ServicePointManager.SetTcpKeepAlive(true, 5000, 5000);
+            ServicePointManager.MaxServicePointIdleTime = 5000;
             ServicePointManager.UseNagleAlgorithm = true;
             //ServicePointManager.DefaultConnectionLimit = 1000;
 
