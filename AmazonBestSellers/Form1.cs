@@ -61,7 +61,7 @@ namespace AmazonBestSellers
             {
                 while (Counter.Finished < numberOfThreads && !this.IsDisposed)
                 {
-                    Thread.Sleep(1000);
+                    new System.Threading.ManualResetEvent(false).WaitOne(1000);
                     this.Invoke((MethodInvoker)delegate
                     {
                         lblBooksValue.Text = Counter.BooksAdded.ToString(); // runs on UI thread
