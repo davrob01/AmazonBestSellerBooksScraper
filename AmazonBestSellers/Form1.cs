@@ -16,6 +16,13 @@ namespace AmazonBestSellers
 {
     public partial class Form1 : Form
     {
+        private object locker = new object();
+
+        private DateTime datetime;
+        private string fileName1;
+        private string fileName2;
+        private Thread[] threads;
+
         public Form1()
         {
             InitializeComponent();
@@ -32,6 +39,7 @@ namespace AmazonBestSellers
             DisableButtons();
             try
             {
+                PrepareOutputFiles();
                 var watch = Stopwatch.StartNew();
 
                 string[,] urls = new string[,]{
@@ -46,19 +54,17 @@ namespace AmazonBestSellers
 
                 int count = urls.GetLength(0);
 
-                Thread[] threads = new Thread[count];
-                ServicePoint[] servicePoints = new ServicePoint[count];
+                threads = new Thread[count];
 
                 for (int i = 0; i < count; i++)
                 {
                     int index = i;
-                    servicePoints[index] = ServicePointManager.FindServicePoint(new Uri(urls[index, 0]));
-                    servicePoints[index].ConnectionLimit = 5;
+                    Uri domainUri = new Uri(urls[index, 0]);
+                    ConnectionManager.AddConnection(domainUri);
 
                     string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
 
-                    threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2]));
-                    threads[index].Priority = ThreadPriority.Highest;
+                    threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2], domainUri));
                     threads[index].Start();
                 }
 
@@ -83,6 +89,7 @@ namespace AmazonBestSellers
             }
             EnableButtons();
             Counter.Reset();
+            ConnectionManager.Reset();
         }
 
         private void refreshStatus(int numberOfThreads)
@@ -91,6 +98,7 @@ namespace AmazonBestSellers
             {
                 while (Counter.Finished < numberOfThreads && !this.IsDisposed)
                 {
+                    Thread.Sleep(1000);
                     this.Invoke((MethodInvoker)delegate
                     {
                         lblBooksValue.Text = Counter.BooksAdded.ToString(); // runs on UI thread
@@ -104,7 +112,7 @@ namespace AmazonBestSellers
             }
         }
 
-        public async void WorkThreadFunction(string url, string name)
+        public async void WorkThreadFunction(string url, string name, Uri domainUri)
         {
             try
             {
@@ -118,6 +126,7 @@ namespace AmazonBestSellers
             finally
             {
                 Counter.IncrementFinished();
+                ConnectionManager.RemoveAndDistributeConnections(domainUri);
             }
         }
 
@@ -129,16 +138,20 @@ namespace AmazonBestSellers
 
             try
             {
-                using (StreamWriter writer = new StreamWriter(string.Format("{0}.csv", name)))
+                lock (locker)
                 {
-                    writer.WriteLine("Category,Rank,ISBN,Title");
-                    IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
-                    foreach (Category category in categoriesByName)
+                    using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
+                    using (StreamWriter writer = new StreamWriter(fileName2, true))
                     {
-                        IEnumerable<Book> booksByRank = category.Books.OrderBy(x => x.Rank);
-                        foreach (Book book in booksByRank)
+                        IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
+                        foreach (Category category in categoriesByName)
                         {
-                            writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, book.Rank, book.ISBN, book.Title);
+                            IEnumerable<Book> booksByRank = category.Books.OrderBy(x => x.Rank);
+                            foreach (Book book in booksByRank)
+                            {
+                                writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, book.Rank, book.ISBN, book.Title);
+                                writerISBN.WriteLine(book.ISBN);
+                            }
                         }
                     }
                 }
@@ -159,6 +172,7 @@ namespace AmazonBestSellers
             {
                 try
                 {
+                    PrepareOutputFiles();
                     var watch = Stopwatch.StartNew();
 
                     string[,] urls = new string[,]{
@@ -173,19 +187,17 @@ namespace AmazonBestSellers
 
                     int count = urls.GetLength(0);
 
-                    Thread[] threads = new Thread[count];
-                    ServicePoint[] servicePoints = new ServicePoint[count];
+                    threads = new Thread[count];
 
                     for (int i = 0; i < count; i++)
                     {
                         int index = i;
-                        servicePoints[index] = ServicePointManager.FindServicePoint(new Uri(urls[index, 0]));
-                        servicePoints[index].ConnectionLimit = 5;
+                        Uri domainUri = new Uri(urls[index, 0]);
+                        ConnectionManager.AddConnection(domainUri);
 
                         string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
 
-                        threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2]));
-                        threads[index].Priority = ThreadPriority.Highest;
+                        threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2], domainUri));
                         threads[index].Start();
                     }
 
@@ -212,6 +224,7 @@ namespace AmazonBestSellers
             }
             EnableButtons();
             Counter.Reset();
+            ConnectionManager.Reset();
         }
 
         private void DisableButtons()
@@ -223,6 +236,16 @@ namespace AmazonBestSellers
         {
             btnStart.Enabled = true;
             btnTest.Enabled = true;
+        }
+        private void PrepareOutputFiles()
+        {
+            datetime = DateTime.Now;
+            string formatedDate = datetime.ToString("MM.dd.yy H.mm.ss");
+            fileName1 = string.Format("Results\\All_ISBN_{0}.txt", formatedDate);
+            fileName2 = string.Format("Results\\Books_Detailed_{0}.csv", formatedDate);
+            (new FileInfo(fileName1)).Directory.Create();
+            File.WriteAllText(fileName1, "");
+            File.WriteAllText(fileName2, string.Format("Category,Rank,ISBN,Title{0}", System.Environment.NewLine));
         }
     }
 }
