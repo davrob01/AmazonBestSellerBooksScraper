@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.IO;
+using System.Collections.Concurrent;
 
 namespace AmazonBestSellers
 {
@@ -12,14 +13,14 @@ namespace AmazonBestSellers
     {
         public string Name { get; set; }
         public string URL { get; set; }
-        public List<Book> Books { get; set; }
+        public ConcurrentBag<Book> Books {get; set;}
         private static object locker = new object();
 
         public Category(string name, string url)
         {
             Name = name;
             URL = url;
-            Books = new List<Book>();
+            Books = new ConcurrentBag<Book>();
         }
 
         public async Task<List<Category>> RetrieveCategoryData(int qPage, int? qAboveFold = null)
@@ -81,24 +82,20 @@ namespace AmazonBestSellers
                     }
                 }
 
-                List<Book> tempBooks = new List<Book>();
+                int tempBooks = 0;
 
                 foreach (HtmlNode node in itemLinks)
                 {
                     string link = node.GetAttributeValue("href", "").Trim();
                     string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
                     string title = node.InnerText;
-                    Book book = new Book(rank, title, ISBN, link);
 
-                    tempBooks.Add(book);
+                    Books.Add(new Book(rank, title, ISBN, link));
+                    tempBooks++;
 
                     rank++;
                 }
-                lock (locker)
-                {
-                    Books.AddRange(tempBooks); // since we are threading, we lock the Books property. JUST in case!
-                }
-                Counter.IncrementBooksAdded(tempBooks.Count);
+                Counter.IncrementBooksAdded(tempBooks);
                 /*
                 // this code checks for missing books. Amazon will sometimes incorrectly deliver a page in which there will be a rank number but no item.
                 List<HtmlNode> rankDivs = root.Descendants("span").Where(n => n.GetAttributeValue("class", "").Equals("zg_rankNumber")).ToList<HtmlNode>();
