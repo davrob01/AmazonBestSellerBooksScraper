@@ -30,18 +30,13 @@ namespace AmazonBestSellers
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //ServicePointManager.DefaultConnectionLimit = 2;
+            
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            panel2.Visible = false;
-            DisableButtons();
             try
             {
-                PrepareOutputFiles();
-                var watch = Stopwatch.StartNew();
-
                 string[,] urls = new string[,]{
                     {"http://www.amazon.com", "/best-sellers-books-Amazon/zgbs/books/", "US Books"},
                     {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/", "JPN Books"},
@@ -52,44 +47,13 @@ namespace AmazonBestSellers
                     {"http://www.amazon.es", "/gp/bestsellers/foreign-books/", "ES Books"}
                 };
 
-                int count = urls.GetLength(0);
-
-                threads = new Thread[count];
-
-                for (int i = 0; i < count; i++)
-                {
-                    int index = i;
-                    Uri domainUri = new Uri(urls[index, 0]);
-                    ConnectionManager.AddConnection(domainUri);
-
-                    string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
-
-                    threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2], domainUri));
-                    threads[index].Start();
-                }
-
-                await Task.Run(() => refreshStatus(count));
-
-                foreach (Thread thread in threads)
-                {
-                    thread.Join();
-                }
-
-                lblBooksValue.Text = Counter.BooksAdded.ToString();
-
-                long time = watch.ElapsedMilliseconds / 1000;
-
-                panel2.Visible = true;
-                lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
+                await StartProcess(urls);
             }
             catch (Exception ex)
             {
                 Logger.Log("Error in UI thread", ex);
-                MessageBox.Show("An Error has occured");
+                MessageBox.Show(string.Format("An Error has occured. {0}", ex.Message));
             }
-            EnableButtons();
-            Counter.Reset();
-            ConnectionManager.Reset();
         }
 
         private void refreshStatus(int numberOfThreads)
@@ -167,17 +131,11 @@ namespace AmazonBestSellers
 
         private async void btnTest_Click(object sender, EventArgs e)
         {
-            panel2.Visible = false;
-            DisableButtons();
-
-            DialogResult dialogResult = MessageBox.Show("This test will just get books from a subcateogory of each domain. Not all the books will be in the output files. Continue?", "Test Run", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
+            try
             {
-                try
+                DialogResult dialogResult = MessageBox.Show("This test will just get books from a subcateogory of each domain. Not all the books will be in the output files. Continue?", "Test Run", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
                 {
-                    PrepareOutputFiles();
-                    var watch = Stopwatch.StartNew();
-
                     string[,] urls = new string[,]{
                         {"http://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books"},
                         {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books"},
@@ -188,47 +146,67 @@ namespace AmazonBestSellers
                         {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books"}
                     };
 
-                    int count = urls.GetLength(0);
-
-                    threads = new Thread[count];
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        int index = i;
-                        Uri domainUri = new Uri(urls[index, 0]);
-                        ConnectionManager.AddConnection(domainUri);
-
-                        string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
-
-                        threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2], domainUri));
-                        threads[index].Start();
-                    }
-
-                    await Task.Run(() => refreshStatus(count));
-
-                    foreach (Thread thread in threads)
-                    {
-                        thread.Join();
-                    }
-
-                    lblBooksValue.Text = Counter.BooksAdded.ToString();
-
-                    long time = watch.ElapsedMilliseconds / 1000;
-
-                    panel2.Visible = true;
-                    lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
-                    Counter.Reset();
+                    await StartProcess(urls);
                 }
-                catch (Exception ex)
+            }
+            catch(Exception ex)
+            {
+                Logger.Log("Error in UI thread", ex);
+                MessageBox.Show("An Error has occured");
+            }
+        }
+
+        private async Task StartProcess(string[,] urls)
+        {
+            panel2.Visible = false;
+            DisableButtons();
+
+            try
+            {
+                PrepareOutputFiles();
+                var watch = Stopwatch.StartNew();
+
+                int count = urls.GetLength(0);
+
+                threads = new Thread[count];
+
+                for (int i = 0; i < count; i++)
                 {
-                    Logger.Log("Error in UI thread", ex);
-                    MessageBox.Show("An Error has occured");
+                    int index = i;
+                    Uri domainUri = new Uri(urls[index, 0]);
+                    ConnectionManager.AddConnection(domainUri);
+
+                    string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
+
+                    threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2], domainUri));
+                    threads[index].Start();
                 }
+
+                await Task.Run(() => refreshStatus(count));
+
+                foreach (Thread thread in threads)
+                {
+                    thread.Join();
+                }
+
+                lblBooksValue.Text = Counter.BooksAdded.ToString();
+
+                long time = watch.ElapsedMilliseconds / 1000;
+
+                panel2.Visible = true;
+                lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
+                Counter.Reset();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Error in UI thread", ex);
+                MessageBox.Show(string.Format("An Error has occured. {0}", ex.Message));
             }
             EnableButtons();
             Counter.Reset();
             ConnectionManager.Reset();
         }
+        
 
         private void DisableButtons()
         {
