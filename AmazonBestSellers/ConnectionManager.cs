@@ -20,7 +20,7 @@ namespace AmazonBestSellers
             // establish general settings
             ServicePointManager.SetTcpKeepAlive(true, 5000, 5000);
             ServicePointManager.MaxServicePointIdleTime = 5000;
-            ServicePointManager.UseNagleAlgorithm = true;
+            //ServicePointManager.UseNagleAlgorithm = true;
             //ServicePointManager.DefaultConnectionLimit = 1000;
 
             servicePoints = new List<ServicePoint>();
