@@ -21,7 +21,6 @@ namespace AmazonBestSellers
         private DateTime datetime;
         private string fileName1;
         private string fileName2;
-        private Thread[] threads;
 
         public Form1()
         {
@@ -76,32 +75,14 @@ namespace AmazonBestSellers
             }
         }
 
-        public async void WorkThreadFunction(string url, string name, Uri domainUri)
+        private async void StartScrape(string url, string name, Uri domainUri)
         {
             try
             {
-                // do any background work
-                await StartScrape(url, name);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
-            finally
-            {
-                Counter.IncrementFinished();
-                ConnectionManager.RemoveAndDistributeConnections(domainUri);
-            }
-        }
+                Domain domain = new Domain(url, name);
 
-        private async Task StartScrape(string url, string name)
-        {
-            Domain domain = new Domain(url, name);
-
-            await domain.ProcessCategory();
-
-            try
-            {
+                await domain.ProcessCategory();
+            
                 lock (locker)
                 {
                     using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
@@ -126,6 +107,11 @@ namespace AmazonBestSellers
             catch(Exception ex)
             {
                 Logger.Log(string.Format("Error creating output file for {0}", name), ex);
+            }
+            finally
+            {
+                Counter.IncrementFinished();
+                ConnectionManager.RemoveAndDistributeConnections(domainUri);
             }
         }
 
@@ -168,26 +154,21 @@ namespace AmazonBestSellers
 
                 int count = urls.GetLength(0);
 
-                threads = new Thread[count];
+                Task[] tasks = new Task[count];
 
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < count; i++ )
                 {
                     int index = i;
                     Uri domainUri = new Uri(urls[index, 0]);
                     ConnectionManager.AddConnection(domainUri);
 
                     string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
-
-                    threads[index] = new Thread(() => WorkThreadFunction(bookCategoryURL, urls[index, 2], domainUri));
-                    threads[index].Start();
+                    tasks[index] = Task.Factory.StartNew(() => StartScrape(bookCategoryURL, urls[index, 2], domainUri),TaskCreationOptions.LongRunning);
                 }
 
                 await Task.Run(() => refreshStatus(count));
 
-                foreach (Thread thread in threads)
-                {
-                    thread.Join();
-                }
+                await Task.WhenAll(tasks);
 
                 lblBooksValue.Text = Counter.BooksAdded.ToString();
 
@@ -207,7 +188,6 @@ namespace AmazonBestSellers
             ConnectionManager.Reset();
         }
         
-
         private void DisableButtons()
         {
             btnStart.Enabled = false;
