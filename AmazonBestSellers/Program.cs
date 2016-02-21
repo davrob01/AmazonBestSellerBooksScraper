@@ -23,9 +23,29 @@ namespace AmazonBestSellers
                 return;
             }
 
+            bool autoStart = false;
+
+            string[] args = Environment.GetCommandLineArgs();
+
+            try
+            {
+                foreach (string arg in args)
+                {
+                    if (arg.ToUpper().Equals("AUTOSTART"))
+                    {
+                        autoStart = true;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(string.Format("Error parsing command-line arguments. {0}", ex.Message));
+            }
+            
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Form1(autoStart));
 
             GC.KeepAlive(mutex);                // mutex shouldn't be released - important line
         }

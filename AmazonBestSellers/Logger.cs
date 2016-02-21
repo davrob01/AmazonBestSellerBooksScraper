@@ -4,45 +4,77 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 
 namespace AmazonBestSellers
 {
     static class Logger
     {
-        private const string fileName = "log.txt";
+        private const string fileName = "Results\\log.txt";
         private static object locker = new object();
+        private static bool errorState = false;
 
         static Logger()
         {
-            DateTime datetime = DateTime.Now;
-            StringBuilder heading = new StringBuilder();
-            heading.AppendFormat("********** Log for {0} {1} **********", datetime.ToLongDateString(), datetime.ToLongTimeString());
-            heading.AppendLine();
-            File.WriteAllText(fileName, heading.ToString());
+            try
+            {
+                DateTime datetime = DateTime.Now;
+                StringBuilder heading = new StringBuilder();
+                heading.AppendFormat("********** Log for {0} {1} **********", datetime.ToLongDateString(), datetime.ToLongTimeString());
+                heading.AppendLine();
+                File.WriteAllText(fileName, heading.ToString());
+            }
+            catch(Exception ex)
+            {
+                errorState = true; // stop all future logs
+                MessageBox.Show(string.Format("Error creating log file. {0}", ex.Message));
+            }
         }
 
         public static void Log(string message, Exception ex)
         {
-            StringBuilder strBuilder = new StringBuilder();
-            strBuilder.AppendLine();
-            strBuilder.AppendLine(message);
-            strBuilder.Append(FormatException(ex));
-
-            lock (locker)
+            if(!errorState)
             {
-                File.AppendAllText(fileName, strBuilder.ToString());
+                try
+                {
+                    StringBuilder strBuilder = new StringBuilder();
+                    strBuilder.AppendLine();
+                    strBuilder.AppendLine(message);
+                    strBuilder.Append(FormatException(ex));
+
+                    lock (locker)
+                    {
+                        File.AppendAllText(fileName, strBuilder.ToString());
+                    }
+                }
+                catch(Exception logException)
+                {
+                    errorState = true; // stop all future logs
+                    MessageBox.Show(string.Format("Error writing to log file. {0}", logException.Message));
+                }
             }
         }
 
         public static void Log(Exception ex)
         {
-            StringBuilder strBuilder = new StringBuilder();
-            strBuilder.AppendLine();
-            strBuilder.Append(FormatException(ex));
-
-            lock (locker)
+            if (!errorState)
             {
-                File.AppendAllText(fileName, strBuilder.ToString());
+                try
+                {
+                    StringBuilder strBuilder = new StringBuilder();
+                    strBuilder.AppendLine();
+                    strBuilder.Append(FormatException(ex));
+
+                    lock (locker)
+                    {
+                        File.AppendAllText(fileName, strBuilder.ToString());
+                    }
+                }
+                catch (Exception logException)
+                {
+                    errorState = true; // stop all future logs
+                    MessageBox.Show(string.Format("Error writing to log file. {0}", logException.Message));
+                }
             }
         }
 

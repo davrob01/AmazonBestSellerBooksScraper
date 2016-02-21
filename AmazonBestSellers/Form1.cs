@@ -21,15 +21,25 @@ namespace AmazonBestSellers
         private DateTime datetime;
         private string fileName1;
         private string fileName2;
+        private bool autoStart;
 
-        public Form1()
+        public Form1(bool autoStart)
         {
             InitializeComponent();
+            this.autoStart = autoStart;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            if (autoStart)
+            {
+                btnStart.PerformClick();
+            }
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -75,14 +85,14 @@ namespace AmazonBestSellers
             }
         }
 
-        private async void StartScrape(string url, string name, Uri domainUri)
+        private async Task StartScrape(string url, string name, Uri domainUri)
         {
             try
             {
                 Domain domain = new Domain(url, name);
 
                 await domain.ProcessCategory();
-            
+
                 lock (locker)
                 {
                     using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
@@ -103,6 +113,11 @@ namespace AmazonBestSellers
                         }
                     }
                 }
+            }
+            catch(FileNotFoundException ex)
+            {
+                Logger.Log(ex);
+                throw ex;
             }
             catch(Exception ex)
             {
@@ -163,7 +178,7 @@ namespace AmazonBestSellers
                     ConnectionManager.AddConnection(domainUri);
 
                     string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
-                    tasks[index] = Task.Factory.StartNew(() => StartScrape(bookCategoryURL, urls[index, 2], domainUri),TaskCreationOptions.LongRunning);
+                    tasks[index] = Task.Factory.StartNew(() => StartScrape(bookCategoryURL, urls[index, 2], domainUri),TaskCreationOptions.LongRunning).Result;
                 }
 
                 await Task.Run(() => refreshStatus(count));
@@ -200,13 +215,20 @@ namespace AmazonBestSellers
         }
         private void PrepareOutputFiles()
         {
-            datetime = DateTime.Now;
-            string formatedDate = datetime.ToString("MM.dd.yy H.mm.ss");
-            fileName1 = string.Format("Results\\All_ISBN_{0}.txt", formatedDate);
-            fileName2 = string.Format("Results\\Books_Detailed_{0}.csv", formatedDate);
-            (new FileInfo(fileName1)).Directory.Create();
-            File.WriteAllText(fileName1, "");
-            File.WriteAllText(fileName2, string.Format("Category,Rank,ISBN,Title{0}", System.Environment.NewLine));
+            try
+            {
+                datetime = DateTime.Now;
+                string formatedDate = datetime.ToString("MM.dd.yy H.mm.ss");
+                fileName1 = string.Format("Results\\All_ISBN_{0}.txt", formatedDate);
+                fileName2 = string.Format("Results\\Books_Detailed_{0}.csv", formatedDate);
+                (new FileInfo(fileName1)).Directory.Create();
+                File.WriteAllText(fileName1, "");
+                File.WriteAllText(fileName2, string.Format("Category,Rank,ISBN,Title{0}", System.Environment.NewLine));
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Could not create output files. Be sure you have write permissions to the starting directory.", ex);
+            }
         }
     }
 }

@@ -72,6 +72,10 @@ namespace AmazonBestSellers
                     }
                 }
             }
+            catch (System.IO.FileNotFoundException ex)
+            {
+                throw ex;
+            }
             catch(Exception ex)
             {
                 Logger.Log(string.Format("Error retrieving categories for {0}", RootCategoryName), ex);
