@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.IO;
-using System.Collections.Concurrent;
 
 namespace AmazonBestSellers
 {
@@ -23,9 +21,8 @@ namespace AmazonBestSellers
             Books = new Book[100]; // this assumes there are never more than 100 books
         }
 
-        public async Task<List<Category>> RetrieveCategoryData(int qPage, int? qAboveFold = null)
+        public async Task<IEnumerable<Category>> RetrieveCategoryData(int qPage, int? qAboveFold = null)
         {
-            List<Category> subCategories = new List<Category>();
             try
             {
                 string url;
@@ -67,8 +64,7 @@ namespace AmazonBestSellers
                         throw new Exception("Attempts exceeded 5");
                     }
                 }
-                var root = doc.DocumentNode;
-                var itemLinks = root.Descendants("a").Where(n => n.ParentNode.GetAttributeValue("class", "").Equals("zg_title"));
+                var itemLinks = doc.DocumentNode.Descendants("a").Where(n => n.ParentNode.GetAttributeValue("class", "").Equals("zg_title"));
 
                 int rank = 1;
                 if(qPage > 1) // rank starting number will be different for other pages
@@ -106,9 +102,7 @@ namespace AmazonBestSellers
                 */
                 if(qPage == 1) // check for subcategories if page is 1
                 {
-                    HtmlNode categoryElement = doc.GetElementbyId("zg_browseRoot");
-
-                    HtmlNode lastUlElement = categoryElement.Descendants("ul").Last();
+                    HtmlNode lastUlElement = doc.GetElementbyId("zg_browseRoot").Descendants("ul").Last();
 
                     bool hasSubCategories = !lastUlElement.Descendants().Any(n => n.GetAttributeValue("class", "").Equals("zg_selected"));
 
@@ -116,13 +110,9 @@ namespace AmazonBestSellers
                     {
                         IEnumerable<HtmlNode> aElements = lastUlElement.Descendants().Where(n => n.OriginalName == "a");
 
-                        foreach (HtmlNode aElement in aElements)
-                        {
-                            string link = aElement.GetAttributeValue("href", "").Trim();
-                            string name = string.Format("{0} > {1}", Name, aElement.InnerText);
-                            Category category = new Category(name, link);
-                            subCategories.Add(category);
-                        }
+                        return
+                            from aElement in aElements
+                            select new Category(string.Format("{0} > {1}", Name, aElement.InnerText), aElement.GetAttributeValue("href", "").Trim());
                     }
                 }
             }
@@ -131,7 +121,7 @@ namespace AmazonBestSellers
                 Logger.Log(string.Format("Failed to process page {0} of URL: {1}", qPage, URL), ex);
             }
 
-            return subCategories;
+            return null;
         }
     }
 }

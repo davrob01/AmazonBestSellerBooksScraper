@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AmazonBestSellers
@@ -25,7 +24,7 @@ namespace AmazonBestSellers
             {
                 Category rootCategory = new Category(RootCategoryName, URL);
 
-                List<Task<List<Category>>> downloadTasks = new List<Task<List<Category>>>();
+                List<Task<IEnumerable<Category>>> downloadTasks = new List<Task<IEnumerable<Category>>>();
 
                 for(int page = 1; page <= 5; page++)
                 {
@@ -43,15 +42,17 @@ namespace AmazonBestSellers
 
                 while(downloadTasks.Count > 0)
                 {
-                    Task<List<Category>> firstFinishedTask = await Task<List<Category>>.WhenAny(downloadTasks);
+                    Task<IEnumerable<Category>> firstFinishedTask = await Task<IEnumerable<Category>>.WhenAny(downloadTasks);
 
                     downloadTasks.Remove(firstFinishedTask);
 
-                    List<Category> subCategories = firstFinishedTask.Result;
+                    var result = firstFinishedTask.Result;
                     firstFinishedTask.Dispose();
 
-                    if(subCategories.Count > 0)
+                    if(result != null)
                     {
+                        var subCategories = result.ToList();
+
                         for (int page = 1; page <= 5; page++)
                         {
                             foreach (Category category in subCategories)
