@@ -37,6 +37,7 @@
             this.lblBooksValue = new System.Windows.Forms.Label();
             this.lblBooks = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
+            this.chkDetail = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -127,11 +128,22 @@
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
+            // chkDetail
+            // 
+            this.chkDetail.AutoSize = true;
+            this.chkDetail.Location = new System.Drawing.Point(12, 173);
+            this.chkDetail.Name = "chkDetail";
+            this.chkDetail.Size = new System.Drawing.Size(216, 17);
+            this.chkDetail.TabIndex = 3;
+            this.chkDetail.Text = "Include book title and category in results";
+            this.chkDetail.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.chkDetail);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnStart);
@@ -144,6 +156,7 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -158,6 +171,7 @@
         private System.Windows.Forms.Label lblComplete;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.CheckBox chkDetail;
     }
 }
 

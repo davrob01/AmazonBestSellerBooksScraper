@@ -19,7 +19,7 @@ namespace AmazonBestSellers
 
             if (!result)
             {
-                MessageBox.Show("Another instance is already running.");
+                MessageBox.Show("Another instance of Amazon Best Sellers is already running.");
                 return;
             }
 

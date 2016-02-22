@@ -22,6 +22,7 @@ namespace AmazonBestSellers
                 StringBuilder heading = new StringBuilder();
                 heading.AppendFormat("********** Log for {0} {1} **********", datetime.ToLongDateString(), datetime.ToLongTimeString());
                 heading.AppendLine();
+                (new FileInfo(fileName)).Directory.Create();
                 File.WriteAllText(fileName, heading.ToString());
             }
             catch(Exception ex)

@@ -12,7 +12,6 @@ namespace AmazonBestSellers
         public string Name { get; set; }
         public string URL { get; set; }
         public Book[] Books { get; set;}
-        private static object locker = new object();
 
         public Category(string name, string url)
         {

@@ -89,29 +89,38 @@ namespace AmazonBestSellers
         {
             try
             {
-                Domain domain = new Domain(url, name);
-
-                await domain.ProcessCategory();
-
-                lock (locker)
+                if (chkDetail.Checked)
                 {
-                    using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
-                    using (StreamWriter writer = new StreamWriter(fileName2, true))
+                    Domain domain = new Domain(url, name);
+
+                    await domain.ProcessCategory();
+
+                    lock (locker)
                     {
-                        IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
-                        foreach (Category category in categoriesByName)
+                        using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
+                        using (StreamWriter writer = new StreamWriter(fileName2, true))
                         {
-                            for (int index = 0; index < 100; index++ )
+                            IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
+                            foreach (Category category in categoriesByName)
                             {
-                                Book currentBook = category.Books[index];
-                                if (currentBook != null)
+                                for (int index = 0; index < 100; index++)
                                 {
-                                    writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, index + 1, currentBook.ISBN, currentBook.Title);
-                                    writerISBN.WriteLine(currentBook.ISBN);
+                                    Book currentBook = category.Books[index];
+                                    if (currentBook != null)
+                                    {
+                                        writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, index + 1, currentBook.ISBN, currentBook.Title);
+                                        writerISBN.WriteLine(currentBook.ISBN);
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                else
+                {
+                    // short output with just ISBNs
+                    DomainSlim domainSlim = new DomainSlim(url);
+                    await domainSlim.ProcessCategory();
                 }
             }
             catch(FileNotFoundException ex)
@@ -164,7 +173,10 @@ namespace AmazonBestSellers
 
             try
             {
-                PrepareOutputFiles();
+                if(chkDetail.Checked)
+                {
+                    PrepareOutputFiles();
+                }
                 var watch = Stopwatch.StartNew();
 
                 int count = urls.GetLength(0);
