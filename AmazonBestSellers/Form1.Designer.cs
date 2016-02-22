@@ -38,6 +38,7 @@
             this.lblBooks = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
             this.chkDetail = new System.Windows.Forms.CheckBox();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -55,6 +56,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
+            this.panel1.Controls.Add(this.lblStatus);
             this.panel1.Controls.Add(this.panel2);
             this.panel1.Controls.Add(this.lblBooksValue);
             this.panel1.Controls.Add(this.lblBooks);
@@ -68,16 +70,16 @@
             this.panel2.Controls.Add(this.lblComplete);
             this.panel2.Controls.Add(this.lblTimeValue);
             this.panel2.Controls.Add(this.lblTime);
-            this.panel2.Location = new System.Drawing.Point(0, 55);
+            this.panel2.Location = new System.Drawing.Point(0, 65);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(163, 71);
+            this.panel2.Size = new System.Drawing.Size(163, 61);
             this.panel2.TabIndex = 5;
             this.panel2.Visible = false;
             // 
             // lblComplete
             // 
             this.lblComplete.AutoSize = true;
-            this.lblComplete.Location = new System.Drawing.Point(3, 18);
+            this.lblComplete.Location = new System.Drawing.Point(3, 10);
             this.lblComplete.Name = "lblComplete";
             this.lblComplete.Size = new System.Drawing.Size(95, 13);
             this.lblComplete.TabIndex = 4;
@@ -86,7 +88,7 @@
             // lblTimeValue
             // 
             this.lblTimeValue.AutoSize = true;
-            this.lblTimeValue.Location = new System.Drawing.Point(98, 44);
+            this.lblTimeValue.Location = new System.Drawing.Point(98, 36);
             this.lblTimeValue.Name = "lblTimeValue";
             this.lblTimeValue.Size = new System.Drawing.Size(0, 13);
             this.lblTimeValue.TabIndex = 1;
@@ -94,7 +96,7 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(3, 44);
+            this.lblTime.Location = new System.Drawing.Point(3, 36);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(83, 13);
             this.lblTime.TabIndex = 0;
@@ -138,6 +140,15 @@
             this.chkDetail.Text = "Include book title and category in results";
             this.chkDetail.UseVisualStyleBackColor = true;
             // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(3, 50);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(136, 13);
+            this.lblStatus.TabIndex = 5;
+            this.lblStatus.Text = "Press start to scrape ISBNs";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -172,6 +183,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.CheckBox chkDetail;
+        private System.Windows.Forms.Label lblStatus;
     }
 }
 

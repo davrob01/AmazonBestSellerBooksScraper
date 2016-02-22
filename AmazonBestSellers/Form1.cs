@@ -220,12 +220,16 @@ namespace AmazonBestSellers
             chkDetail.Enabled = false;
             btnStart.Enabled = false;
             btnTest.Enabled = false;
+            lblStatus.Text = "Scraping in progress...";
+            lblStatus.Refresh();
         }
         private void EnableButtons()
         {
             chkDetail.Enabled = true;
             btnStart.Enabled = true;
             btnTest.Enabled = true;
+            lblStatus.Text = "";
+            lblStatus.Refresh();
         }
         private void PrepareOutputFiles()
         {
