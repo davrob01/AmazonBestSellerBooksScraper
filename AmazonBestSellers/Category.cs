@@ -64,34 +64,37 @@ namespace AmazonBestSellers
                         throw new Exception("Attempts exceeded 5");
                     }
                 }
-                var itemLinks = doc.DocumentNode.Descendants("a").Where(n => n.ParentNode.GetAttributeValue("class", "").Equals("zg_title"));
+                var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a");
 
-                int rank = 1;
-                if(qPage > 1) // rank starting number will be different for other pages
+                if(itemLinks != null)
                 {
-                    rank = ((qPage - 1) * 20) + 1;
-
-                    if(qAboveFold == 0)
+                    int rank = 1;
+                    if (qPage > 1) // rank starting number will be different for other pages
                     {
-                        rank += 3; // there are only 3 items on the first ajax page, hopefully that is true for every category
-                        // consider using the rank number field on the html page
+                        rank = ((qPage - 1) * 20) + 1;
+
+                        if (qAboveFold == 0)
+                        {
+                            rank += 3; // there are only 3 items on the first ajax page, hopefully that is true for every category
+                            // consider using the rank number field on the html page
+                        }
                     }
+                    int tempBooks = 0;
+
+                    foreach (HtmlNode node in itemLinks)
+                    {
+                        string link = node.GetAttributeValue("href", "").Trim();
+                        string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
+                        string title = node.InnerText;
+
+                        Books[rank - 1] = new Book(title, ISBN, link);
+                        tempBooks++;
+
+                        rank++;
+                    }
+                    Counter.IncrementBooksAdded(tempBooks);
                 }
-
-                int tempBooks = 0;
-
-                foreach (HtmlNode node in itemLinks)
-                {
-                    string link = node.GetAttributeValue("href", "").Trim();
-                    string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
-                    string title = node.InnerText;
-
-                    Books[rank - 1] = new Book(title, ISBN, link);
-                    tempBooks++;
-
-                    rank++;
-                }
-                Counter.IncrementBooksAdded(tempBooks);
+                
                 /*
                 // this code checks for missing books. Amazon will sometimes incorrectly deliver a page in which there will be a rank number but no item.
                 List<HtmlNode> rankDivs = root.Descendants("span").Where(n => n.GetAttributeValue("class", "").Equals("zg_rankNumber")).ToList<HtmlNode>();
