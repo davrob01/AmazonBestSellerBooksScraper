@@ -217,11 +217,13 @@ namespace AmazonBestSellers
         
         private void DisableButtons()
         {
+            chkDetail.Enabled = false;
             btnStart.Enabled = false;
             btnTest.Enabled = false;
         }
         private void EnableButtons()
         {
+            chkDetail.Enabled = true;
             btnStart.Enabled = true;
             btnTest.Enabled = true;
         }
