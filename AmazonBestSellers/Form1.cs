@@ -147,13 +147,13 @@ namespace AmazonBestSellers
                 if (dialogResult == DialogResult.Yes)
                 {
                     string[,] urls = new string[,]{
-                        {"http://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books"},
-                        {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books"},
-                        {"http://www.amazon.co.uk", "/Best-Sellers-Books-Sports-Hobbies-Games/zgbs/books/55/", "UK Books"},
-                        {"http://www.amazon.it", "/gp/bestsellers/books/508745031/", "IT Books"},
-                        {"http://www.amazon.fr", "/gp/bestsellers/english-books/80179011/", "FR Books"},
-                        {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/65108011/", "DE Books"},
-                        {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books"}
+                        {"http://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books > Arts & Photography"},
+                        {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books > Computers & Technology"},
+                        {"http://www.amazon.co.uk", "/Best-Sellers-Books-Sports-Hobbies-Games/zgbs/books/55/", "UK Books > Sports, Hobbies & Games"},
+                        {"http://www.amazon.it", "/gp/bestsellers/books/508745031/", "IT Books > Religione e spiritualità"},
+                        {"http://www.amazon.fr", "/gp/bestsellers/english-books/80179011/", "FR Books > Health, Mind & Body"},
+                        {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/65108011/", "DE Books > Outdoor, Umwelt & Natur"},
+                        {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books > Deporte"}
                     };
 
                     await StartProcess(urls);
