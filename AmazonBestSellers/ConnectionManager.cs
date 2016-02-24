@@ -10,21 +10,54 @@ namespace AmazonBestSellers
 {
     public static class ConnectionManager
     {
-        private static int connectionsPerDomain;
         private static List<ServicePoint> servicePoints;
         private static object locker = new object();
+        private static int connectionsPerDomain = 10;
         private const int maxConnections = 100;
  
         static ConnectionManager()
         {
-            // establish general settings
-            //ServicePointManager.SetTcpKeepAlive(true, 5000, 5000);
-            ServicePointManager.MaxServicePointIdleTime = 5000;
-            ServicePointManager.Expect100Continue = false;
-            //ServicePointManager.DefaultConnectionLimit = 1000;
+            try
+            {
+                servicePoints = new List<ServicePoint>();
 
-            servicePoints = new List<ServicePoint>();
-            connectionsPerDomain = 6;
+                // establish general settings
+                ServicePointManager.SetTcpKeepAlive(true, 5000, 5000);
+                ServicePointManager.MaxServicePointIdleTime = 5000;
+                ServicePointManager.Expect100Continue = false;
+                //ServicePointManager.DefaultConnectionLimit = 1000;
+
+                try
+                {
+                    var connections_config = System.Configuration.ConfigurationManager.AppSettings["Connections_Per_Domain"];
+                    if (!string.IsNullOrWhiteSpace(connections_config))
+                    {
+                        int connections;
+                        if (int.TryParse(connections_config, out connections))
+                        {
+                            if (connections >= 2)
+                            {
+                                if (connections >= maxConnections)
+                                {
+                                    connectionsPerDomain = maxConnections;
+                                }
+                                else
+                                {
+                                    connectionsPerDomain = connections;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Logger.Log("Error reading config setting for Connections_Per_Domain. Using default instead.", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Error in connection manager initialization.", ex);
+            }
         }
 
         public static void AddConnection(Uri uri)
@@ -33,7 +66,7 @@ namespace AmazonBestSellers
             {
                 ServicePoint sp = ServicePointManager.FindServicePoint(uri);
                 sp.ConnectionLimit = connectionsPerDomain;
-                sp.ConnectionLeaseTimeout = 120000;
+                //sp.ConnectionLeaseTimeout = 30000;
                 servicePoints.Add(sp);
             }
         }
