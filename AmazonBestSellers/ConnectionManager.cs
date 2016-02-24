@@ -18,13 +18,13 @@ namespace AmazonBestSellers
         static ConnectionManager()
         {
             // establish general settings
-            ServicePointManager.SetTcpKeepAlive(true, 5000, 5000);
+            //ServicePointManager.SetTcpKeepAlive(true, 5000, 5000);
             ServicePointManager.MaxServicePointIdleTime = 5000;
-            //ServicePointManager.UseNagleAlgorithm = true;
+            ServicePointManager.Expect100Continue = false;
             //ServicePointManager.DefaultConnectionLimit = 1000;
 
             servicePoints = new List<ServicePoint>();
-            connectionsPerDomain = 40;
+            connectionsPerDomain = 6;
         }
 
         public static void AddConnection(Uri uri)
@@ -33,6 +33,7 @@ namespace AmazonBestSellers
             {
                 ServicePoint sp = ServicePointManager.FindServicePoint(uri);
                 sp.ConnectionLimit = connectionsPerDomain;
+                sp.ConnectionLeaseTimeout = 120000;
                 servicePoints.Add(sp);
             }
         }
