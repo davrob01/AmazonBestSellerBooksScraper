@@ -42,7 +42,7 @@ namespace AmazonBestSellers
 
                 while (downloadTasks.Count > 0)
                 {
-                    Task<IEnumerable<string>> firstFinishedTask = await Task<IEnumerable<string>>.WhenAny(downloadTasks);
+                    Task<IEnumerable<string>> firstFinishedTask = await Task.WhenAny(downloadTasks);
 
                     downloadTasks.Remove(firstFinishedTask);
 
