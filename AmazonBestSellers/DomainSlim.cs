@@ -10,15 +10,14 @@ namespace AmazonBestSellers
 {
     public class DomainSlim
     {
-        public string URL { get; set; }
-
-        private List<string> ISBNs;
+        private string _URL;
+        private List<string> _ISBNs;
         private object locker = new object();
 
         public DomainSlim(string url)
         {
-            URL = url;
-            ISBNs = new List<string>();
+            _URL = url;
+            _ISBNs = new List<string>();
         }
 
         public async Task ProcessCategory()
@@ -31,12 +30,12 @@ namespace AmazonBestSellers
                 {
                     if (page == 1)
                     {
-                        downloadTasks.Add(RetrieveCategoryData(URL, page));
+                        downloadTasks.Add(RetrieveCategoryData(_URL, page));
                     }
                     else
                     {
-                        downloadTasks.Add(RetrieveCategoryData(URL, page, 0));
-                        downloadTasks.Add(RetrieveCategoryData(URL, page, 1));
+                        downloadTasks.Add(RetrieveCategoryData(_URL, page, 0));
+                        downloadTasks.Add(RetrieveCategoryData(_URL, page, 1));
                     }
                 }
 
@@ -70,20 +69,20 @@ namespace AmazonBestSellers
                         }
                     }
                     // flush output
-                    if(ISBNs.Count > 500)
+                    if(_ISBNs.Count > 500)
                     {
                         lock (locker)
                         {
-                            Writer.WriteToFile(ISBNs.GetRange(0, 500));
-                            ISBNs.RemoveRange(0, 500);
+                            Writer.WriteToFile(_ISBNs.GetRange(0, 500));
+                            _ISBNs.RemoveRange(0, 500);
                         }
                     }
                 }
-                if(ISBNs.Count > 0)
+                if (_ISBNs.Count > 0)
                 {
                     lock (locker)
                     {
-                        Writer.WriteToFile(ISBNs);
+                        Writer.WriteToFile(_ISBNs);
                     }
                 }
             }
@@ -93,7 +92,7 @@ namespace AmazonBestSellers
             }
             catch (Exception ex)
             {
-                Logger.Log(string.Format("Error retrieving categories for {0}", URL), ex);
+                Logger.Log(string.Format("Error retrieving categories for {0}", _URL), ex);
             }
         }
 
@@ -158,7 +157,7 @@ namespace AmazonBestSellers
                     Counter.IncrementBooksAdded(tempBooks);
                     lock (locker)
                     {
-                        ISBNs.Add(tempStrBuilder.ToString());
+                        _ISBNs.Add(tempStrBuilder.ToString());
                     }
                 }
 

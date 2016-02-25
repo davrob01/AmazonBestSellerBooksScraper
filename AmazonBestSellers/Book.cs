@@ -8,15 +8,37 @@ namespace AmazonBestSellers
 {
     public class Book
     {
-        public string Title { get; set; }
-        public string ISBN { get; set; }
-        public string URL { get; set; }
+        private string _title;
+        private string _ISBN;
+        private string _URL;
+
+        public string Title
+        {
+            get
+            {
+                return _title;
+            }
+        }
+        public string ISBN
+        {
+            get
+            {
+                return _ISBN;
+            }
+        }
+        public string URL
+        {
+            get
+            {
+                return _URL;
+            }
+        }
 
         public Book(string title, string isbn, string url)
         {
-            Title = title;
-            ISBN = isbn;
-            URL = url;
+            _title = title;
+            _ISBN = isbn;
+            _URL = url;
         }
     }
 }

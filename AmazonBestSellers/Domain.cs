@@ -7,22 +7,30 @@ namespace AmazonBestSellers
 {
     public class Domain
     {
-        public string RootCategoryName { get; set; }
-        public string URL { get; set; }
-        public List<Category> Categories { get; set; }
+        private string _rootCategoryName;
+        private string _URL;
+        private List<Category> _categories;
+
+        public List<Category> Categories 
+        { 
+            get 
+            {
+                return _categories;
+            }
+        }
 
         public Domain(string url, string rootCategoryName = "Books")
         {
-            URL = url;
-            RootCategoryName = rootCategoryName;
-            Categories = new List<Category>();
+            _rootCategoryName = rootCategoryName;
+            _URL = url;
+            _categories = new List<Category>();
         }
 
         public async Task ProcessCategory()
         {
             try
             {
-                Category rootCategory = new Category(RootCategoryName, URL);
+                Category rootCategory = new Category(_rootCategoryName, _URL);
 
                 List<Task<IEnumerable<Category>>> downloadTasks = new List<Task<IEnumerable<Category>>>();
 
@@ -38,7 +46,7 @@ namespace AmazonBestSellers
                         downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 1));
                     }
                 }
-                Categories.Add(rootCategory);
+                _categories.Add(rootCategory);
 
                 while(downloadTasks.Count > 0)
                 {
@@ -68,7 +76,7 @@ namespace AmazonBestSellers
                                 }
                             }
                         }
-                        Categories.AddRange(subCategories);
+                        _categories.AddRange(subCategories);
                     }
                 }
             }
@@ -78,7 +86,7 @@ namespace AmazonBestSellers
             }
             catch(Exception ex)
             {
-                Logger.Log(string.Format("Error retrieving categories for {0}", RootCategoryName), ex);
+                Logger.Log(string.Format("Error retrieving categories for {0}", _rootCategoryName), ex);
             }
         }
     }

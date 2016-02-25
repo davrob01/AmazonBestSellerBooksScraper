@@ -9,15 +9,37 @@ namespace AmazonBestSellers
 {
     public class Category
     {
-        public string Name { get; set; }
-        public string URL { get; set; }
-        public Book[] Books { get; set;}
+        private string _name;
+        private string _URL;
+        private Book[] _books;
+
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+        }
+        public string URL
+        {
+            get
+            {
+                return _URL;
+            }
+        }
+        public Book[] Books
+        {
+            get
+            {
+                return _books;
+            }
+        }
 
         public Category(string name, string url)
         {
-            Name = name;
-            URL = url;
-            Books = new Book[100]; // this assumes there are never more than 100 books
+            _name = name;
+            _URL = url;
+            _books = new Book[100]; // this assumes there are never more than 100 books
         }
 
         public async Task<IEnumerable<Category>> RetrieveCategoryData(int qPage, int? qAboveFold = null)
@@ -27,11 +49,11 @@ namespace AmazonBestSellers
                 string url;
                 if(qPage == 1)
                 {
-                    url = string.Format("{0}?pg=1", URL); // page 1 we get full page so we can get the sub categories
+                    url = string.Format("{0}?pg=1", _URL); // page 1 we get full page so we can get the sub categories
                 }
                 else
                 {
-                    url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1&isAboveTheFold={2}", URL, qPage, qAboveFold); // ajax page
+                    url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1&isAboveTheFold={2}", _URL, qPage, qAboveFold); // ajax page
                 }
 
                 HtmlDocument doc = new HtmlDocument();
@@ -114,13 +136,13 @@ namespace AmazonBestSellers
 
                         return
                             from aElement in aElements
-                            select new Category(string.Format("{0} > {1}", Name, aElement.InnerText), aElement.GetAttributeValue("href", "").Trim());
+                            select new Category(string.Format("{0} > {1}", _name, aElement.InnerText), aElement.GetAttributeValue("href", "").Trim());
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log(string.Format("Failed to process page {0} of URL: {1}", qPage, URL), ex);
+                Logger.Log(string.Format("Failed to process page {0} of URL: {1}", qPage, _URL), ex);
             }
 
             return null;
