@@ -61,7 +61,7 @@ namespace AmazonBestSellers
                     {
                         var subCategories = result.ToList();
 
-                        for (int page = 1; page <= 5; page++)
+                        for (int page = 5; page >= 1; --page)
                         {
                             foreach (Category category in subCategories)
                             {

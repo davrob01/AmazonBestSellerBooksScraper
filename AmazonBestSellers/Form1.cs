@@ -200,7 +200,7 @@ namespace AmazonBestSellers
                     ConnectionManager.AddConnection(domainUri);
 
                     string bookCategoryURL = string.Join("", urls[index, 0], urls[index, 1]);
-                    tasks[index] = Task.Factory.StartNew(() => StartScrape(bookCategoryURL, urls[index, 2], domainUri),TaskCreationOptions.LongRunning).Result;
+                    tasks[index] = Task.Factory.StartNew(() => StartScrape(bookCategoryURL, urls[index, 2], domainUri)).Result;
                 }
 
                 await Task.Run(() => refreshStatus(count));
