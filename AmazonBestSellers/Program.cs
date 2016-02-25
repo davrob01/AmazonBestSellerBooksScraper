@@ -14,15 +14,6 @@ namespace AmazonBestSellers
         [STAThread]
         static void Main()
         {
-            bool result;
-            var mutex = new System.Threading.Mutex(true, "D-ROB Software/ AmazonBestSellers", out result);
-
-            if (!result)
-            {
-                MessageBox.Show("Another instance of Amazon Best Sellers is already running.");
-                return;
-            }
-
             bool autoStart = false;
 
             string[] args = Environment.GetCommandLineArgs();
@@ -47,7 +38,6 @@ namespace AmazonBestSellers
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1(autoStart));
 
-            GC.KeepAlive(mutex);                // mutex shouldn't be released - important line
         }
     }
 }

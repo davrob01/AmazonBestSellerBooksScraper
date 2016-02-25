@@ -61,7 +61,7 @@ namespace AmazonBestSellers
             catch (Exception ex)
             {
                 Logger.Log("Error in UI thread", ex);
-                MessageBox.Show(string.Format("An Error has occured. {0}", ex.Message));
+                MessageBox.Show(string.Format("An Error has occured. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -130,7 +130,7 @@ namespace AmazonBestSellers
             }
             catch(Exception ex)
             {
-                Logger.Log(string.Format("Error creating output file for {0}", name), ex);
+                Logger.Log(string.Format("Error creating output for {0}", name), ex);
             }
             finally
             {
@@ -162,7 +162,7 @@ namespace AmazonBestSellers
             catch(Exception ex)
             {
                 Logger.Log("Error in UI thread", ex);
-                MessageBox.Show("An Error has occured");
+                MessageBox.Show(string.Format("An Error has occured. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -170,9 +170,19 @@ namespace AmazonBestSellers
         {
             panel2.Visible = false;
             DisableButtons();
-
+            Mutex mutex = null;
             try
             {
+                bool result;
+                mutex = new Mutex(true, "D-ROB Software/ AmazonBestSellers", out result);
+                if (!result)
+                {
+                    lblStatus.Text = "Closing...";
+                    MessageBox.Show("Another instance of Amazon Best Sellers is already running.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                    Application.Exit();
+                }
+            
                 if(chkDetail.Checked)
                 {
                     PrepareOutputFiles();
@@ -204,11 +214,19 @@ namespace AmazonBestSellers
                 panel2.Visible = true;
                 lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
                 Counter.Reset();
+                GC.KeepAlive(mutex);                // mutex shouldn't be released - important line
             }
             catch (Exception ex)
             {
                 Logger.Log("Error in UI thread", ex);
-                MessageBox.Show(string.Format("An Error has occured. {0}", ex.Message));
+                MessageBox.Show(string.Format("An Error has occured. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (mutex != null)
+                {
+                    mutex.Close();
+                }
             }
             EnableButtons();
             Counter.Reset();
