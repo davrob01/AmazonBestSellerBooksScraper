@@ -75,13 +75,13 @@ B0064BV4RW
 OPTIONAL OUTPUT - MORE DETAIL - OPEN WITH EXCEL:
 ------------------------------------------------
 
-By selecting the corresponding check box, an additional output file is created in the CSV Format (Comma-Separated-Value). It contains the following: 
+By selecting the corresponding check box, additional output files are created, one per domain, in the CSV Format (Comma-Separated-Value). They contain the following: 
 
 Book category, Rank, ISBN, and title is displayed. One record per line.
 
 This file was designed for opening in Microsoft Excel.
 
-WITH THIS OPTION CHECKED, THE SCRAPING PROCESS WILL TAKE A BIT LONGER AND WILL CONSUME MORE SYSTEM MEMORY. THE CSV FILE WILL ALSO BE QUITE LARGE (~300 MB).
+WITH THIS OPTION CHECKED, THE SCRAPING PROCESS WILL TAKE A BIT LONGER AND WILL CONSUME MORE SYSTEM MEMORY.
 
 Example when viewing in Excel:
 
@@ -123,6 +123,9 @@ A: If you browse to that category on Amazon's websites you will most likely find
 	
 	A: Check the log.txt file. It is possible there was an error downloading one of the pages.
 
+2. Regarding detailed output, why are the results divided into separate files by domain? Why not just make one big file?
+
+A: MS Excel cannot open a file that has more than 1,048,576 rows. Also the file would be very large and take time to open.
 
 -------------------------------------
 SUPPORT AND FEEDBACK

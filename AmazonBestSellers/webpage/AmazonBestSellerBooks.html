@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 	<title>Amazon Best Seller Books</title>
 	<meta charset="UTF-8">
@@ -14,9 +14,9 @@
 	<div id="container">
 		<div id="content">
 *********************************<br/>
-* <span style="position: relative; left:244px;">*</span><br/>
-* Amazon Best Seller Books version 1 <span style="position: relative; left:4px;">*</span><br/>
-* <span style="position: relative; left:244px;">*</span><br/>
+* <span style="position: relative; left:260px;">*</span><br/>
+* Amazon Best Seller Books version 1 <span style="position: relative; left:5px;">*</span><br/>
+* <span style="position: relative; left:260px;">*</span><br/>
 *********************************<br/>
 <br/>
 -------------------------------------<br/>
@@ -223,7 +223,7 @@ OPTIONAL OUTPUT - MORE DETAIL - OPEN WITH EXCEL:
 
 <br/>
 
-By selecting the corresponding check box, an additional output file is created in the CSV Format (Comma-Separated-Value). It contains the following: 
+By selecting the corresponding check box, additional output files are created, one per domain, in the CSV Format (Comma-Separated-Value). They contain the following: 
 <br/>
 
 
@@ -241,7 +241,7 @@ This file was designed for opening in Microsoft Excel.
 
 <br/>
 
-WITH THIS OPTION CHECKED, THE SCRAPING PROCESS WILL TAKE A BIT LONGER AND WILL CONSUME MORE SYSTEM MEMORY. THE CSV FILE WILL ALSO BE QUITE LARGE (~300 MB).
+WITH THIS OPTION CHECKED, THE SCRAPING PROCESS WILL TAKE A BIT LONGER AND WILL CONSUME MORE SYSTEM MEMORY.
 <br/>
 
 
@@ -363,7 +363,11 @@ A: If you browse to that category on Amazon's websites you will most likely find
 
 	A: Check the log.txt file. It is possible there was an error downloading one of the pages.
 <p/>
-
+<br />
+2. Regarding detailed output, why are the results divided into separate files by domain? Why not just make one big file?
+<br />
+<br />
+A: MS Excel cannot open a file that has more than 1,048,576 rows. Also the file would be very large and take time to open.
 
 <br/>
 

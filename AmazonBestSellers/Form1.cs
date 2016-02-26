@@ -99,8 +99,9 @@ namespace AmazonBestSellers
                     lock (locker)
                     {
                         using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
-                        using (StreamWriter writer = new StreamWriter(fileName2, true))
+                        using (StreamWriter writer = new StreamWriter(string.Format("Results\\{0}{1}", name, fileName2, true)))
                         {
+                            writer.WriteLine("Category,Rank,ISBN,Title");
                             IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
                             foreach (Category category in categoriesByName)
                             {
@@ -148,13 +149,13 @@ namespace AmazonBestSellers
                 if (dialogResult == DialogResult.Yes)
                 {
                     string[,] urls = new string[,]{
-                        {"http://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books > Arts & Photography"},
-                        {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books > Computers & Technology"},
-                        {"http://www.amazon.co.uk", "/Best-Sellers-Books-Sports-Hobbies-Games/zgbs/books/55/", "UK Books > Sports, Hobbies & Games"},
-                        {"http://www.amazon.it", "/gp/bestsellers/books/508745031/", "IT Books > Religione e spiritualità"},
-                        {"http://www.amazon.fr", "/gp/bestsellers/english-books/80179011/", "FR Books > Health, Mind & Body"},
-                        {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/65108011/", "DE Books > Outdoor, Umwelt & Natur"},
-                        {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books > Deporte"}
+                        {"http://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books - Arts & Photography"},
+                        {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books - Computers & Technology"},
+                        {"http://www.amazon.co.uk", "/Best-Sellers-Books-Sports-Hobbies-Games/zgbs/books/55/", "UK Books - Sports, Hobbies & Games"},
+                        {"http://www.amazon.it", "/gp/bestsellers/books/508745031/", "IT Books - Religione e spiritualità"},
+                        {"http://www.amazon.fr", "/gp/bestsellers/english-books/80179011/", "FR Books - Health, Mind & Body"},
+                        {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/65108011/", "DE Books - Outdoor, Umwelt & Natur"},
+                        {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books - Deporte"}
                     };
 
                     await StartProcess(urls);
@@ -257,10 +258,9 @@ namespace AmazonBestSellers
                 datetime = DateTime.Now;
                 string formatedDate = datetime.ToString("MM.dd.yy H.mm.ss");
                 fileName1 = string.Format("Results\\All_ISBN_{0}.txt", formatedDate);
-                fileName2 = string.Format("Results\\Books_Detailed_{0}.csv", formatedDate);
+                fileName2 = string.Format("_{0}.csv", formatedDate);
                 (new FileInfo(fileName1)).Directory.Create();
                 File.WriteAllText(fileName1, "");
-                File.WriteAllText(fileName2, string.Format("Category,Rank,ISBN,Title{0}", System.Environment.NewLine));
             }
             catch(Exception ex)
             {
