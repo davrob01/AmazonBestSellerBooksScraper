@@ -72,17 +72,19 @@ namespace AmazonBestSellers
                             }
                         }
                         loaded = true; // if we get here with no exception, then it was loaded successfully
-                    }
+                    }     
                     catch (Exception ex)
                     {
+#if DEBUG               
                         if (attempts == 1)
                         {
                             Logger.Log(string.Format("Error downloading page. Attemping to retry... URL: {0}", url), ex);
                         }
-                    }
-                    if (attempts == 5 && loaded == false)
-                    {
-                        throw new Exception("Attempts exceeded 5");
+#endif
+                        if (attempts == 5 && loaded == false)
+                        {
+                            throw new Exception("Attempts exceeded 5", ex);
+                        }
                     }
                 }
                 var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a");
