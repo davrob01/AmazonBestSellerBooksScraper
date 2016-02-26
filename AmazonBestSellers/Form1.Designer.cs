@@ -29,8 +29,10 @@ namespace AmazonBestSellers
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnStart = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblComplete = new System.Windows.Forms.Label();
             this.lblTimeValue = new System.Windows.Forms.Label();
@@ -39,7 +41,6 @@ namespace AmazonBestSellers
             this.lblBooks = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
             this.chkDetail = new System.Windows.Forms.CheckBox();
-            this.lblStatus = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -65,6 +66,15 @@ namespace AmazonBestSellers
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(260, 126);
             this.panel1.TabIndex = 1;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(3, 50);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(136, 13);
+            this.lblStatus.TabIndex = 5;
+            this.lblStatus.Text = "Press start to scrape ISBNs";
             // 
             // panel2
             // 
@@ -141,15 +151,6 @@ namespace AmazonBestSellers
             this.chkDetail.Text = "Include book title and category in results";
             this.chkDetail.UseVisualStyleBackColor = true;
             // 
-            // lblStatus
-            // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(3, 50);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(136, 13);
-            this.lblStatus.TabIndex = 5;
-            this.lblStatus.Text = "Press start to scrape ISBNs";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -159,6 +160,7 @@ namespace AmazonBestSellers
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnStart);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Amazon Best Sellers";
             this.Load += new System.EventHandler(this.Form1_Load);
