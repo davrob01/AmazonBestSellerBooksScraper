@@ -42,10 +42,11 @@ namespace AmazonBestSellers
                     strBuilder.AppendLine();
                     strBuilder.AppendLine(message);
                     strBuilder.Append(FormatException(ex));
+                    string output = strBuilder.ToString();
 
                     lock (locker)
                     {
-                        File.AppendAllText(fileName, strBuilder.ToString());
+                        File.AppendAllText(fileName, output);
                     }
                 }
                 catch(Exception logException)
@@ -65,10 +66,11 @@ namespace AmazonBestSellers
                     StringBuilder strBuilder = new StringBuilder();
                     strBuilder.AppendLine();
                     strBuilder.Append(FormatException(ex));
+                    string output = strBuilder.ToString();
 
                     lock (locker)
                     {
-                        File.AppendAllText(fileName, strBuilder.ToString());
+                        File.AppendAllText(fileName, output);
                     }
                 }
                 catch (Exception logException)
@@ -89,6 +91,7 @@ namespace AmazonBestSellers
             {
                 strBuilder.AppendLine();
                 strBuilder.AppendFormat("Inner Exception: {0}", ex.InnerException.GetType().Name);
+                strBuilder.AppendLine();
                 strBuilder.AppendLine(ex.InnerException.Message);
                 strBuilder.AppendLine(ex.InnerException.StackTrace);
             }
