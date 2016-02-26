@@ -41,13 +41,14 @@ namespace AmazonBestSellers
             this.lblBooks = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
             this.chkDetail = new System.Windows.Forms.CheckBox();
+            this.lblSeeResults = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(12, 218);
+            this.btnStart.Location = new System.Drawing.Point(12, 225);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 0;
@@ -64,7 +65,7 @@ namespace AmazonBestSellers
             this.panel1.Controls.Add(this.lblBooks);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(260, 126);
+            this.panel1.Size = new System.Drawing.Size(260, 149);
             this.panel1.TabIndex = 1;
             // 
             // lblStatus
@@ -78,12 +79,13 @@ namespace AmazonBestSellers
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.lblSeeResults);
             this.panel2.Controls.Add(this.lblComplete);
             this.panel2.Controls.Add(this.lblTimeValue);
             this.panel2.Controls.Add(this.lblTime);
-            this.panel2.Location = new System.Drawing.Point(0, 65);
+            this.panel2.Location = new System.Drawing.Point(0, 66);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(163, 61);
+            this.panel2.Size = new System.Drawing.Size(227, 83);
             this.panel2.TabIndex = 5;
             this.panel2.Visible = false;
             // 
@@ -99,7 +101,7 @@ namespace AmazonBestSellers
             // lblTimeValue
             // 
             this.lblTimeValue.AutoSize = true;
-            this.lblTimeValue.Location = new System.Drawing.Point(98, 36);
+            this.lblTimeValue.Location = new System.Drawing.Point(98, 58);
             this.lblTimeValue.Name = "lblTimeValue";
             this.lblTimeValue.Size = new System.Drawing.Size(0, 13);
             this.lblTimeValue.TabIndex = 1;
@@ -107,7 +109,7 @@ namespace AmazonBestSellers
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(3, 36);
+            this.lblTime.Location = new System.Drawing.Point(3, 58);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(83, 13);
             this.lblTime.TabIndex = 0;
@@ -133,7 +135,7 @@ namespace AmazonBestSellers
             // 
             // btnTest
             // 
-            this.btnTest.Location = new System.Drawing.Point(197, 218);
+            this.btnTest.Location = new System.Drawing.Point(197, 225);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(75, 23);
             this.btnTest.TabIndex = 2;
@@ -144,18 +146,27 @@ namespace AmazonBestSellers
             // chkDetail
             // 
             this.chkDetail.AutoSize = true;
-            this.chkDetail.Location = new System.Drawing.Point(12, 173);
+            this.chkDetail.Location = new System.Drawing.Point(12, 180);
             this.chkDetail.Name = "chkDetail";
             this.chkDetail.Size = new System.Drawing.Size(216, 17);
             this.chkDetail.TabIndex = 3;
             this.chkDetail.Text = "Include book title and category in results";
             this.chkDetail.UseVisualStyleBackColor = true;
             // 
+            // lblSeeResults
+            // 
+            this.lblSeeResults.AutoSize = true;
+            this.lblSeeResults.Location = new System.Drawing.Point(3, 35);
+            this.lblSeeResults.Name = "lblSeeResults";
+            this.lblSeeResults.Size = new System.Drawing.Size(189, 13);
+            this.lblSeeResults.TabIndex = 5;
+            this.lblSeeResults.Text = "New book data is in the Results folder.";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(284, 292);
             this.Controls.Add(this.chkDetail);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.panel1);
@@ -187,6 +198,7 @@ namespace AmazonBestSellers
         private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.CheckBox chkDetail;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label lblSeeResults;
     }
 }
 

@@ -10,7 +10,7 @@ namespace AmazonBestSellers
 {
     public static class Writer
     {
-        public static string Filepath { get; set; }
+        private static string Filepath;
         private static object locker = new Object();
 
         static Writer()
@@ -21,7 +21,14 @@ namespace AmazonBestSellers
                 {
                     DateTime datetime = DateTime.Now;
                     string formatedDate = datetime.ToString("MM.dd.yy H.mm.ss");
-                    Filepath = string.Format("Results\\All_ISBN_{0}.txt", formatedDate);
+                    if (Form1.outputDirectory != null)
+                    {
+                        Filepath = string.Format("{0}All_ISBN_{1}.txt", Form1.outputDirectory, formatedDate);
+                    }
+                    else
+                    {
+                        Filepath = string.Format("Results\\All_ISBN_{0}.txt", formatedDate);
+                    }
                     (new FileInfo(Filepath)).Directory.Create();
                 }
             }
