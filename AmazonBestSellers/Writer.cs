@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* Copyright (c) David Robertson 2016 */
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;

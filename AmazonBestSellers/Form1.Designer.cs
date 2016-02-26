@@ -1,4 +1,5 @@
-﻿namespace AmazonBestSellers
+﻿/* Copyright (c) David Robertson 2016 */
+namespace AmazonBestSellers
 {
     partial class Form1
     {

@@ -1,6 +1,8 @@
 **************************************
 *                                    *
-* Amazon Best Seller Books version 1 *
+*  Amazon Best Seller Books Scraper  *
+*                                    *
+* Copyright (c) David Robertson 2016 *
 *                                    *
 **************************************
 
