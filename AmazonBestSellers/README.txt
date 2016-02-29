@@ -43,12 +43,12 @@ INSTRUCTIONS:
 -------------------------------------
 
 1. Extract the zip file to a new folder
-2. Open the folder and Run the file AmazonBestSellerBooksScraper.exe
+2. Open the folder and Run the file AmazonBestSellerBooksScraper
 3. A new window should appear. Click "Start" button to begin the process.
 4. Progress will be updated throughout. Books added should constantly be increasing.
 5. Let the program run until completion.
 6. A successful run will say "Process Complete!" and about 2 million books should be added.
-7. See "Results" folder inside the same folder that contains AmazonBestSellerBooks.exe
+7. See "Results" folder inside the same folder that contains AmazonBestSellerBooks
 
 Note: Depending on your internet connection, and system specs, the process may take between 1 to 3 hours.
 
