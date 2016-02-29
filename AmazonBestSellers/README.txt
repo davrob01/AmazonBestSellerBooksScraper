@@ -102,7 +102,7 @@ A) Connections_Per_Domain
 
 If you know you have a very fast internet connection of 20 Mbps or greater. You may optionally increase the number of connection per domain (website). This setting is found in the .config file. The default setting is 10. Max is 100. 
 
-Increasing this number may speed up the process. However, more bandwidth may be consumed, so if you expect to use your internet connection while the process is running, it may be slow (you may even want to reduce this numer in that case).
+Increasing this number may speed up the process. However, more bandwidth may be consumed, so if you expect to use your internet connection while the process is running, it may be slow (you may even want to reduce this number in that case).
 
 B) Automatic Start and Scheduling
 
