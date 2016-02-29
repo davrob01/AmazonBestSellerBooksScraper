@@ -1,4 +1,4 @@
-Copyright (c) David Robertson 2016
+Copyright (c) David T Robertson 2016
 
 Microsoft Public License (MS-PL)
 

@@ -1,4 +1,4 @@
-﻿/* Copyright (c) David Robertson 2016 */
+﻿/* Copyright (c) David T Robertson 2016 */
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

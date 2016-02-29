@@ -1,10 +1,10 @@
-**************************************
-*                                    *
-*  Amazon Best Seller Books Scraper  *
-*                                    *
-* Copyright (c) David Robertson 2016 *
-*                                    *
-**************************************
+****************************************
+*                                      *
+*   Amazon Best Seller Books Scraper   *
+*                                      *
+* Copyright (c) David T Robertson 2016 *
+*                                      *
+****************************************
 
 -------------------------------------
 DESCRIPTION:
@@ -43,7 +43,7 @@ INSTRUCTIONS:
 -------------------------------------
 
 1. Extract the zip file to a new folder
-2. Open the folder and Run the file AmazonBestSellerBooks.exe
+2. Open the folder and Run the file AmazonBestSellerBooksScraper.exe
 3. A new window should appear. Click "Start" button to begin the process.
 4. Progress will be updated throughout. Books added should constantly be increasing.
 5. Let the program run until completion.

@@ -1,4 +1,4 @@
-﻿/* Copyright (c) David Robertson 2016 */
+﻿/* Copyright (c) David T Robertson 2016 */
 namespace AmazonBestSellers
 {
     partial class Form1
@@ -34,6 +34,7 @@ namespace AmazonBestSellers
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblStatus = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.lblSeeResults = new System.Windows.Forms.Label();
             this.lblComplete = new System.Windows.Forms.Label();
             this.lblTimeValue = new System.Windows.Forms.Label();
             this.lblTime = new System.Windows.Forms.Label();
@@ -41,7 +42,7 @@ namespace AmazonBestSellers
             this.lblBooks = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
             this.chkDetail = new System.Windows.Forms.CheckBox();
-            this.lblSeeResults = new System.Windows.Forms.Label();
+            this.lblCopyright = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -88,6 +89,15 @@ namespace AmazonBestSellers
             this.panel2.Size = new System.Drawing.Size(227, 83);
             this.panel2.TabIndex = 5;
             this.panel2.Visible = false;
+            // 
+            // lblSeeResults
+            // 
+            this.lblSeeResults.AutoSize = true;
+            this.lblSeeResults.Location = new System.Drawing.Point(3, 35);
+            this.lblSeeResults.Name = "lblSeeResults";
+            this.lblSeeResults.Size = new System.Drawing.Size(189, 13);
+            this.lblSeeResults.TabIndex = 5;
+            this.lblSeeResults.Text = "New book data is in the Results folder.";
             // 
             // lblComplete
             // 
@@ -148,32 +158,34 @@ namespace AmazonBestSellers
             this.chkDetail.AutoSize = true;
             this.chkDetail.Location = new System.Drawing.Point(12, 180);
             this.chkDetail.Name = "chkDetail";
-            this.chkDetail.Size = new System.Drawing.Size(216, 17);
+            this.chkDetail.Size = new System.Drawing.Size(245, 17);
             this.chkDetail.TabIndex = 3;
-            this.chkDetail.Text = "Include book title and category in results";
+            this.chkDetail.Text = "Include book title, price and category in results";
             this.chkDetail.UseVisualStyleBackColor = true;
             // 
-            // lblSeeResults
+            // lblCopyright
             // 
-            this.lblSeeResults.AutoSize = true;
-            this.lblSeeResults.Location = new System.Drawing.Point(3, 35);
-            this.lblSeeResults.Name = "lblSeeResults";
-            this.lblSeeResults.Size = new System.Drawing.Size(189, 13);
-            this.lblSeeResults.TabIndex = 5;
-            this.lblSeeResults.Text = "New book data is in the Results folder.";
+            this.lblCopyright.AutoSize = true;
+            this.lblCopyright.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCopyright.Location = new System.Drawing.Point(85, 278);
+            this.lblCopyright.Name = "lblCopyright";
+            this.lblCopyright.Size = new System.Drawing.Size(113, 12);
+            this.lblCopyright.TabIndex = 4;
+            this.lblCopyright.Text = "© David T Robertson 2016";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 292);
+            this.Controls.Add(this.lblCopyright);
             this.Controls.Add(this.chkDetail);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnStart);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Amazon Best Sellers";
+            this.Text = "Amazon Best Seller Books Scraper";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.panel1.ResumeLayout(false);
@@ -199,6 +211,7 @@ namespace AmazonBestSellers
         private System.Windows.Forms.CheckBox chkDetail;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label lblSeeResults;
+        private System.Windows.Forms.Label lblCopyright;
     }
 }
 
