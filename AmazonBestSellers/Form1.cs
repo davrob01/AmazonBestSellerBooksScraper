@@ -99,12 +99,36 @@ namespace AmazonBestSellers
 
                     await domain.ProcessCategory();
 
+                    // set encodings and currency symbols
+                    string priceColumnHeader = "Price";
+                    string symbolToFind = "";
+                    Encoding encoding = Encoding.GetEncoding("ISO-8859-1");
+                    switch (domainUri.Host)
+                    {
+                        case "www.amazon.co.jp":
+                            priceColumnHeader = "Price ¥"; // proper yen character, yes there is a difference
+                            symbolToFind = "￥ ";
+                            break;
+                        case "www.amazon.fr":
+                        case "www.amazon.de":
+                        case "www.amazon.es":
+                        case "www.amazon.it":
+                            priceColumnHeader = "Price EUR";
+                            symbolToFind = "EUR ";
+                            encoding = Encoding.GetEncoding("ISO-8859-15");
+                            break;
+                        case "www.amazon.co.uk":
+                            priceColumnHeader = "Price £";
+                            symbolToFind = "£";
+                            break;
+                    }
+
                     lock (locker)
                     {
                         using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
-                        using (StreamWriter writer = new StreamWriter(string.Format("{0}{1}{2}", outputDirectory, name, fileName2), false))
+                        using (StreamWriter writer = new StreamWriter(string.Format("{0}{1}{2}", outputDirectory, name, fileName2), false, encoding))
                         {
-                            writer.WriteLine("Category,Rank,ISBN,Title");
+                            writer.WriteLine(string.Format("Category,Rank,ISBN,{0},Title", priceColumnHeader));
                             IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
                             foreach (Category category in categoriesByName)
                             {
@@ -113,7 +137,27 @@ namespace AmazonBestSellers
                                     Book currentBook = category.Books[index];
                                     if (currentBook != null)
                                     {
-                                        writer.WriteLine("\"{0}\",=\"{1}\",=\"{2}\",\"{3}\"", category.Name, index + 1, currentBook.ISBN, currentBook.Title);
+                                        string price = currentBook.Price;
+                                        // remove currency symbols
+                                        if (symbolToFind != "")
+                                        {
+                                            price = price.Replace(symbolToFind, "");
+                                            if(symbolToFind == "EUR ")
+                                            {
+                                                // show as US decimal
+                                                var lastCommaIndex = price.LastIndexOf(',');
+                                                price = price.Replace(".", ","); // replace periods with commas (Europe uses dots where US normally uses commas)
+                                                // replace last comma with period (decimal point)
+                                                if(lastCommaIndex != -1)
+                                                {
+                                                    var charArray = price.ToCharArray();
+                                                    charArray[lastCommaIndex] = '.';
+                                                    price = new string(charArray);
+                                                }
+                                            }
+                                        }
+                                        writer.WriteLine("\"{0}\",\"{1}\",=\"{2}\",\"{3}\",\"{4}\"", category.Name, index + 1, currentBook.ISBN, price, currentBook.Title);
+
                                         writerISBN.WriteLine(currentBook.ISBN);
                                     }
                                 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.IO;
+using System.Text;
 
 namespace AmazonBestSellers
 {
@@ -69,7 +70,24 @@ namespace AmazonBestSellers
                         {
                             using(Stream stream = await gZipWebClient.OpenReadTaskAsync(url))
                             {
-                                doc.Load(stream, System.Text.Encoding.GetEncoding("ISO-8859-1"));
+                                // get encoding
+                                Encoding encoding = null;
+                                try
+                                {
+                                    var responseHeaders = gZipWebClient.ResponseHeaders.GetValues("Content-Type");
+                                    var encodingString = responseHeaders[0].Split('=').LastOrDefault();
+                                    if (!string.IsNullOrWhiteSpace(encodingString))
+                                    {
+                                        encoding = Encoding.GetEncoding(encodingString);
+                                    }
+                                }
+                                catch {}
+                                if(encoding == null)
+                                {
+                                    encoding = Encoding.GetEncoding("ISO-8859-1");
+                                }
+
+                                doc.Load(stream, encoding);
                             }
                         }
                         loaded = true; // if we get here with no exception, then it was loaded successfully
@@ -107,11 +125,36 @@ namespace AmazonBestSellers
 
                     foreach (HtmlNode node in itemLinks)
                     {
+                        string price = "N/A";
+                        HtmlNode priceNode = node.SelectSingleNode("..//..//*[@class='price']");
+                        if(priceNode != null)
+                        {
+                            price = priceNode.InnerText;
+                        }
+                        else
+                        {
+                            HtmlNode availNode = node.SelectSingleNode("..//..//div[@class='zg_availability']");
+                            if (availNode != null)
+                            {
+                                if (availNode.InnerText == "現在在庫切れです。")
+                                {
+                                    price = "Currently out of stock";
+                                }
+                                else if (availNode.InnerText == "現在お取り扱いできません")
+                                {
+                                    price = "Currently unavailable";
+                                }
+                                else
+                                {
+                                    price = availNode.InnerText;
+                                }
+                            }
+                        }
                         string link = node.GetAttributeValue("href", "").Trim();
                         string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
                         string title = node.InnerText;
 
-                        Books[rank - 1] = new Book(title, ISBN, link);
+                        Books[rank - 1] = new Book(title, ISBN, link, price);
                         tempBooks++;
 
                         rank++;
