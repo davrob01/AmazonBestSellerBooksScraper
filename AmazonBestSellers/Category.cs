@@ -154,7 +154,7 @@ namespace AmazonBestSellers
                         string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
                         string title = node.InnerText;
 
-                        Books[rank - 1] = new Book(title, ISBN, link, price);
+                        Books[rank - 1] = new Book(title, ISBN, price);
                         tempBooks++;
 
                         rank++;

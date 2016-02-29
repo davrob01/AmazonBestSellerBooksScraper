@@ -7,7 +7,6 @@ namespace AmazonBestSellers
     {
         private string _title;
         private string _ISBN;
-        private string _URL;
         private string _price;
 
         public string Title
@@ -24,13 +23,6 @@ namespace AmazonBestSellers
                 return _ISBN;
             }
         }
-        public string URL
-        {
-            get
-            {
-                return _URL;
-            }
-        }
         public string Price
         {
             get
@@ -39,11 +31,10 @@ namespace AmazonBestSellers
             }
         }
 
-        public Book(string title, string isbn, string url, string price)
+        public Book(string title, string isbn, string price)
         {
             _title = title;
             _ISBN = isbn;
-            _URL = url;
             _price = price;
         }
     }
