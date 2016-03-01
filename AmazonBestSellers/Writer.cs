@@ -8,6 +8,9 @@ using System.Collections.Generic;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// Writes ISBNs to a file. This is used by the DomainSlim class to flush output as categories are processed.
+    /// </summary>
     public static class Writer
     {
         private static string Filepath;

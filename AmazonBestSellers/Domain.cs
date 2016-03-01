@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// Represents a domain, example: US books.
+    /// </summary>
     public class Domain
     {
         private string _rootCategoryName;
@@ -27,6 +30,10 @@ namespace AmazonBestSellers
             _categories = new List<Category>();
         }
 
+        /// <summary>
+        /// Sets up and manages the tasks that process every page of every category in this domain.
+        /// </summary>
+        /// <returns>A task that completes when all categories have been processed.</returns>
         public async Task ProcessCategory()
         {
             try
@@ -35,6 +42,7 @@ namespace AmazonBestSellers
 
                 List<Task<IEnumerable<Category>>> downloadTasks = new List<Task<IEnumerable<Category>>>();
 
+                // add a task for each page
                 for(int page = 1; page <= 5; page++)
                 {
                     if(page == 1)
@@ -51,17 +59,19 @@ namespace AmazonBestSellers
 
                 while(downloadTasks.Count > 0)
                 {
-                    Task<IEnumerable<Category>> firstFinishedTask = await Task.WhenAny(downloadTasks);
+                    Task<IEnumerable<Category>> firstFinishedTask = await Task.WhenAny(downloadTasks); // get a completed task
 
-                    downloadTasks.Remove(firstFinishedTask);
+                    downloadTasks.Remove(firstFinishedTask); // remove tasks as they complete
 
-                    var result = firstFinishedTask.Result;
+                    var result = firstFinishedTask.Result; // check the result of the task
                     firstFinishedTask.Dispose();
 
                     if(result != null)
                     {
+                        // subcategories are found, add more tasks
                         var subCategories = result.ToList();
 
+                        // add a task for each page
                         for (int page = 5; page >= 1; --page)
                         {
                             foreach (Category category in subCategories)
@@ -77,13 +87,13 @@ namespace AmazonBestSellers
                                 }
                             }
                         }
-                        _categories.AddRange(subCategories);
+                        _categories.AddRange(subCategories); // update the list of subcategories in this domain
                     }
                 }
             }
             catch (System.IO.FileNotFoundException ex)
             {
-                throw ex;
+                throw ex; // this may happen when the HtmlAgilityPack is not found
             }
             catch(Exception ex)
             {

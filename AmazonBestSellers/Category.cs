@@ -9,6 +9,9 @@ using System.Text;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// Represents a category
+    /// </summary>
     public class Category
     {
         private string _name;
@@ -44,6 +47,14 @@ namespace AmazonBestSellers
             _books = new Book[100]; // this assumes there are never more than 100 books
         }
 
+        /// <summary>
+        /// Scrapes all book data from a page within this category. For each category, books are collected from 9 total URLs. 1 URL for page 1 and 8 URLs for pages 2 thru 5. Even  
+        /// though more URLs are requested for pages 2 thru 5, the total bandwidth consumed is still lower because each ajax page is very small compared to a normal page.
+        /// </summary>
+        /// <param name="qPage">The page number used in the query string.</param>
+        /// <param name="qAboveFold">Pages 2 through 5 are retrieved via Amazon's ajax urls. But they are divided into two sub pages per page. This query string
+        /// indicates which sub page is being retrieved.</param>
+        /// <returns>An enumerable list of sub categories found on the page. Subcategories are only checked on page 1. For the other pages, null is returned.</returns>
         public async Task<IEnumerable<Category>> RetrieveCategoryData(int qPage, int? qAboveFold = null)
         {
             try
@@ -70,7 +81,7 @@ namespace AmazonBestSellers
                         {
                             using(Stream stream = await gZipWebClient.OpenReadTaskAsync(url))
                             {
-                                // get encoding
+                                // get encoding. todo: consider setting the encoding based on the url, instead of doing all this work
                                 Encoding encoding = null;
                                 try
                                 {
@@ -106,7 +117,7 @@ namespace AmazonBestSellers
                         }
                     }
                 }
-                var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a");
+                var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a"); // determine all the books on the page by checking for this html
 
                 if(itemLinks != null)
                 {
@@ -133,9 +144,11 @@ namespace AmazonBestSellers
                         }
                         else
                         {
+                            // no price displayed, check availability
                             HtmlNode availNode = node.SelectSingleNode("..//..//div[@class='zg_availability']");
                             if (availNode != null)
                             {
+                                // translate Japanese text
                                 if (availNode.InnerText == "現在在庫切れです。")
                                 {
                                     price = "Currently out of stock";
@@ -151,7 +164,7 @@ namespace AmazonBestSellers
                             }
                         }
                         string link = node.GetAttributeValue("href", "").Trim();
-                        string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
+                        string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0]; // parse the link to get the ISBN
                         string title = node.InnerText;
 
                         Books[rank - 1] = new Book(title, ISBN, price);

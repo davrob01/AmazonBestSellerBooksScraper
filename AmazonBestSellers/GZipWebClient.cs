@@ -8,6 +8,9 @@ using System.Net;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// A custom version of the WebClient class that uses GZip compression and other settings.
+    /// </summary>
     public class GZipWebClient : WebClient
     {
         protected override WebRequest GetWebRequest(Uri address)

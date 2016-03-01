@@ -3,6 +3,9 @@ using System;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// Represents a book
+    /// </summary>
     public class Book
     {
         private string _title;

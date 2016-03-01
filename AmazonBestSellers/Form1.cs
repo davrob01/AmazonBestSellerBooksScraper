@@ -15,6 +15,9 @@ using System.Threading;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// The main form used by the program.
+    /// </summary>
     public partial class Form1 : Form
     {
         private object locker = new object();
@@ -69,6 +72,9 @@ namespace AmazonBestSellers
             }
         }
 
+        /// <summary>
+        /// Updates the UI to reflect the status of the overall process. Status is expressed by displaying the number of books currently added.
+        /// </summary>
         private void refreshStatus(int numberOfThreads)
         {
             try
@@ -79,7 +85,7 @@ namespace AmazonBestSellers
                     this.Invoke((MethodInvoker)delegate
                     {
                         lblBooksValue.Text = Counter.BooksAdded.ToString(); // runs on UI thread
-                        lblBooksValue.Refresh();
+                        lblBooksValue.Refresh(); // update label
                     });
                 }
             }
@@ -89,6 +95,9 @@ namespace AmazonBestSellers
             }
         }
 
+        /// <summary>
+        /// Starts the scraping process for a domain. Also outputs details to a CSV if that option is checked in the form.
+        /// </summary>
         private async Task StartScrape(string url, string name, Uri domainUri)
         {
             try
@@ -216,6 +225,11 @@ namespace AmazonBestSellers
             }
         }
 
+        /// <summary>
+        /// Starts all the scraping tasks, one for each domain.
+        /// </summary>
+        /// <param name="qPage">The list of the urls of the domains to scrape.</param>
+        /// <returns>A task that completes when all the scraping tasks have completed and all data has been outputted.</returns>
         private async Task StartProcess(string[,] urls)
         {
             panel2.Visible = false;
@@ -223,12 +237,13 @@ namespace AmazonBestSellers
             Mutex mutex = null;
             try
             {
+                // only allow one process at a time
                 bool result;
-                mutex = new Mutex(true, "D-ROB Software/ AmazonBestSellers", out result);
+                mutex = new Mutex(true, "D-ROB Software/ AmazonBestSellerBooksScraper", out result);
                 if (!result)
                 {
                     lblStatus.Text = "Closing...";
-                    MessageBox.Show("Another instance of Amazon Best Sellers is already running.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Another instance of the Amazon Best Seller Books Scraper is already running.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close();
                     Application.Exit();
                 }
@@ -239,7 +254,7 @@ namespace AmazonBestSellers
                 }
                 var watch = Stopwatch.StartNew();
 
-                int count = urls.GetLength(0);
+                int count = urls.GetLength(0); // determine number of domains
 
                 Task[] tasks = new Task[count];
 

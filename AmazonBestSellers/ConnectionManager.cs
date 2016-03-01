@@ -9,6 +9,9 @@ using System.Threading;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// This class will setup service points and will also redistribute connections to other service points once a service point is no longer in use.
+    /// </summary>
     public static class ConnectionManager
     {
         private static List<ServicePoint> servicePoints;
@@ -72,6 +75,10 @@ namespace AmazonBestSellers
             }
         }
 
+        /// <summary>With this logic, the number of total connections in use (or at least the limit) will remain the same
+        /// even after a domain is finished processing. This is not a vital part of the overall process but it can help.
+        /// </summary>
+        /// <param name="uri">The Uri of the domain no longer in use.</param>
         public static void RemoveAndDistributeConnections(Uri uri)
         {
             try
@@ -80,24 +87,24 @@ namespace AmazonBestSellers
                 {
                     ServicePoint sp = servicePoints.First(x => x.Address == uri);
 
-                    int connectionsFree = sp.ConnectionLimit;
+                    int connectionsFree = sp.ConnectionLimit; // determine how many connections are no longer in use
 
                     servicePoints.Remove(sp);
                     sp.ConnectionLimit = 1;
 
                     if(servicePoints.Count != 0 && connectionsFree != maxConnections)
                     {
-                        int availableConnections = connectionsFree / servicePoints.Count;
+                        int availableConnections = connectionsFree / servicePoints.Count; // determine how many we can add to each service point still in use
 
                         foreach (ServicePoint servicePoint in servicePoints)
                         {
                             if (connectionsFree + availableConnections >= maxConnections)
                             {
-                                servicePoint.ConnectionLimit = maxConnections; //set to maximum
+                                servicePoint.ConnectionLimit = maxConnections; // set to maximum
                             }
                             else
                             {
-                                servicePoint.ConnectionLimit += availableConnections;
+                                servicePoint.ConnectionLimit += availableConnections; // add connections
                             }
                         }
                     }

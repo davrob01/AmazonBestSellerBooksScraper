@@ -8,6 +8,10 @@ using System.Threading;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// This class is used to maintain a count of the total number of books added throughout the process. It is
+    /// also used to count the number of finished domains.
+    /// </summary>
     static class Counter
     {
         private static long _booksAdded;

@@ -9,6 +9,10 @@ using System.IO;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// Represents a domain, example: US books. This is a slim version of the Domain and Category classes combined into one class that,
+    /// instead of storing extra book data, simply outputs only the ISBNs. Output is created as ISBNs are found, until all categories have been processed.
+    /// </summary>
     public class DomainSlim
     {
         private string _URL;
@@ -142,7 +146,7 @@ namespace AmazonBestSellers
                         }
                     }
                 }
-                var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a");
+                var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a"); // determine all the books on the page by checking for this html
 
                 if (itemLinks != null)
                 {
@@ -152,7 +156,7 @@ namespace AmazonBestSellers
                     foreach (HtmlNode node in itemLinks)
                     {
                         string link = node.GetAttributeValue("href", "").Trim();
-                        string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0];
+                        string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0]; // parse the link to get the ISBN
 
                         tempStrBuilder.AppendLine(ISBN);
                         tempBooks++;

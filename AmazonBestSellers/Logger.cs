@@ -9,6 +9,9 @@ using System.Windows.Forms;
 
 namespace AmazonBestSellers
 {
+    /// <summary>
+    /// Logs errors to a file
+    /// </summary>
     static class Logger
     {
         private static string fileName = "Results\\log.txt";
