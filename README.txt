@@ -10,7 +10,7 @@
 DESCRIPTION:
 -------------------------------------
 
-This program scrapes Amazon to get all the ISBNs of the Best Selling books in EVERY category and every subcategory.
+This program scrapes Amazon to get all the ISBNs of the top 100 Best Selling books in EVERY category and every subcategory.
 
 The following websites are included in the scraping process:
 

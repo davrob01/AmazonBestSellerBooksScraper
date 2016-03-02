@@ -246,6 +246,7 @@ namespace AmazonBestSellers
                     MessageBox.Show("Another instance of the Amazon Best Seller Books Scraper is already running.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close();
                     Application.Exit();
+                    return;
                 }
             
                 if(chkDetail.Checked)
