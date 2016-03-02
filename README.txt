@@ -135,5 +135,9 @@ SUPPORT AND FEEDBACK
 Please send any feedback or questions to drobsoftware@gmail.com
 
 
+-------------------------------------
+CREDITS
+-------------------------------------
 
-
+This software uses Html Agility Pack. 
+https://htmlagilitypack.codeplex.com/
