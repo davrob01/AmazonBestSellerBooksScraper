@@ -22,10 +22,6 @@ namespace AmazonBestSellers
         {
             try
             {
-                if(Form1.outputDirectory != null)
-                {
-                    fileName = string.Format("{0}log.txt", Form1.outputDirectory);
-                }
                 DateTime datetime = DateTime.Now;
                 StringBuilder heading = new StringBuilder();
                 heading.AppendFormat("********** Log for {0} {1} **********", datetime.ToLongDateString(), datetime.ToLongTimeString());
