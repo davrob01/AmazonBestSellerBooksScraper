@@ -53,6 +53,7 @@ namespace AmazonBestSellers
         {
             try
             {
+                outputDirectory = "Results\\";
                 string[,] urls = new string[,]{
                     {"http://www.amazon.com", "/best-sellers-books-Amazon/zgbs/books/", "US Books"},
                     {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/", "JPN Books"},
