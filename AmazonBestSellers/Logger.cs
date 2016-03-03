@@ -85,6 +85,31 @@ namespace AmazonBestSellers
             }
         }
 
+        public static void Log(string message)
+        {
+            if (!errorState)
+            {
+                try
+                {
+                    StringBuilder strBuilder = new StringBuilder();
+                    strBuilder.AppendLine();
+                    strBuilder.AppendLine(message);
+                    strBuilder.AppendLine();
+                    string output = strBuilder.ToString();
+
+                    lock (locker)
+                    {
+                        File.AppendAllText(fileName, output);
+                    }
+                }
+                catch (Exception logException)
+                {
+                    errorState = true; // stop all future logs
+                    MessageBox.Show(string.Format("Error writing to log file. {0}", logException.Message));
+                }
+            }
+        }
+
         private static string FormatException(Exception ex)
         {
             StringBuilder strBuilder = new StringBuilder();

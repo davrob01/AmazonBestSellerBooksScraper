@@ -110,7 +110,7 @@ The command line option "autostart" bypasses the Start button and will run the p
 
 C) Error Logging
 
-An error log file is always created after every execution. Unless there are no errors.
+An error log file is always created in the Results folder after every run.
 
 -------------------------------------
 Frequently Asked Questions

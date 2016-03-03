@@ -64,7 +64,7 @@ namespace AmazonBestSellers
                     {"http://www.amazon.es", "/gp/bestsellers/foreign-books/", "ES Books"}
                 };
 
-                await StartProcess(urls);
+                await StartProcess(urls, false);
             }
             catch (Exception ex)
             {
@@ -216,7 +216,7 @@ namespace AmazonBestSellers
                         {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books - Deporte"}
                     };
 
-                    await StartProcess(urls);
+                    await StartProcess(urls, true);
                 }
             }
             catch(Exception ex)
@@ -231,7 +231,7 @@ namespace AmazonBestSellers
         /// </summary>
         /// <param name="qPage">The list of the urls of the domains to scrape.</param>
         /// <returns>A task that completes when all the scraping tasks have completed and all data has been outputted.</returns>
-        private async Task StartProcess(string[,] urls)
+        private async Task StartProcess(string[,] urls, bool test)
         {
             panel2.Visible = false;
             DisableButtons();
@@ -252,7 +252,26 @@ namespace AmazonBestSellers
             
                 if(chkDetail.Checked)
                 {
+                    if(test)
+                    {
+                        Logger.Log("Starting test run with detailed output...");
+                    }
+                    else
+                    {
+                        Logger.Log("Starting process with detailed output...");
+                    }
                     PrepareOutputFiles();
+                }
+                else
+                {
+                    if (test)
+                    {
+                        Logger.Log("Starting test run...");
+                    }
+                    else
+                    {
+                        Logger.Log("Starting process...");
+                    }
                 }
                 var watch = Stopwatch.StartNew();
 
@@ -280,7 +299,7 @@ namespace AmazonBestSellers
 
                 panel2.Visible = true;
                 lblTimeValue.Text = string.Format("{0} seconds", time.ToString());
-                Counter.Reset();
+
                 GC.KeepAlive(mutex);                // mutex shouldn't be released - important line
             }
             catch (Exception ex)
@@ -298,6 +317,8 @@ namespace AmazonBestSellers
             EnableButtons();
             Counter.Reset();
             ConnectionManager.Reset();
+            datetime = DateTime.Now;
+            Logger.Log(string.Format("Finished at {0} {1}", datetime.ToLongDateString(), datetime.ToLongTimeString()));
         }
         
         private void DisableButtons()
