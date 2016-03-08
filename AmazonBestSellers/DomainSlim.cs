@@ -115,7 +115,7 @@ namespace AmazonBestSellers
                     url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1&isAboveTheFold={2}", categoryURL, qPage, qAboveFold); // ajax page
                 }
 
-                HtmlDocument doc = new HtmlDocument();
+                HtmlDocument doc = null;
                 bool loaded = false;
                 int attempts = 0;
                 while (attempts < 5 && loaded == false)
@@ -127,6 +127,7 @@ namespace AmazonBestSellers
                         {
                             using (Stream stream = await gZipWebClient.OpenReadTaskAsync(url))
                             {
+                                doc = new HtmlDocument();
                                 doc.Load(stream, System.Text.Encoding.GetEncoding("ISO-8859-1"));
                             }
                         }
