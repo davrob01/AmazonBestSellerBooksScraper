@@ -63,18 +63,17 @@ namespace AmazonBestSellers
 
                     downloadTasks.Remove(firstFinishedTask); // remove tasks as they complete
 
-                    var result = firstFinishedTask.Result; // check the result of the task
                     firstFinishedTask.Dispose();
 
-                    if(result != null)
+                    if(firstFinishedTask.Result != null)
                     {
                         // subcategories are found, add more tasks
-                        var subCategories = result.ToList();
+                        var subCategories = firstFinishedTask.Result.ToList();
 
-                        // add a task for each page
-                        for (int page = 5; page >= 1; --page)
+                        foreach (Category category in subCategories)
                         {
-                            foreach (Category category in subCategories)
+                            // add a task for each page
+                            for (int page = 5; page >= 1; --page)
                             {
                                 if (page == 1)
                                 {

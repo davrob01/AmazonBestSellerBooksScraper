@@ -50,16 +50,15 @@ namespace AmazonBestSellers
 
                     downloadTasks.Remove(firstFinishedTask);
 
-                    var result = firstFinishedTask.Result;
                     firstFinishedTask.Dispose();
 
-                    if (result != null)
+                    if (firstFinishedTask.Result != null)
                     {
-                        var subCategories = result.ToList();
+                        var subCategories = firstFinishedTask.Result.ToList();
 
-                        for (int page = 5; page >= 1; --page)
+                        foreach (string categoryURL in subCategories)
                         {
-                            foreach (string categoryURL in subCategories)
+                            for (int page = 5; page >= 1; --page)
                             {
                                 if (page == 1)
                                 {
