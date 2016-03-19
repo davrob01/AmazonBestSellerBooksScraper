@@ -18,6 +18,15 @@ namespace AmazonBestSellers
         private string _URL;
         private Book[] _books;
 
+        private static readonly string XPathItemLinks = "//div[@class='zg_title']//a";
+        private static readonly string XPathPrice = "..//..//*[@class='price']";
+        private static readonly string XPathAvailability = "..//..//div[@class='zg_availability']";
+
+        private static readonly string OutOfStock = "Currently out of stock";
+        private static readonly string CurrentlyUnavailable = "Currently unavailable";
+        private static readonly string OutOfStockJPN = "現在在庫切れです。";
+        private static readonly string CurrentlyUnavailableJPN = "現在お取り扱いできません";
+
         public string Name
         {
             get
@@ -117,7 +126,7 @@ namespace AmazonBestSellers
                         }
                     }
                 }
-                var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a"); // determine all the books on the page by checking for this html
+                var itemLinks = doc.DocumentNode.SelectNodes(XPathItemLinks); // determine all the books on the page by checking for this html
 
                 if(itemLinks != null)
                 {
@@ -137,7 +146,7 @@ namespace AmazonBestSellers
                     foreach (HtmlNode node in itemLinks)
                     {
                         string price = "N/A";
-                        HtmlNode priceNode = node.SelectSingleNode("..//..//*[@class='price']");
+                        HtmlNode priceNode = node.SelectSingleNode(XPathPrice);
                         if(priceNode != null)
                         {
                             price = priceNode.InnerText;
@@ -145,17 +154,17 @@ namespace AmazonBestSellers
                         else
                         {
                             // no price displayed, check availability
-                            HtmlNode availNode = node.SelectSingleNode("..//..//div[@class='zg_availability']");
+                            HtmlNode availNode = node.SelectSingleNode(XPathAvailability);
                             if (availNode != null)
                             {
                                 // translate Japanese text
-                                if (availNode.InnerText == "現在在庫切れです。")
+                                if (availNode.InnerText == OutOfStockJPN)
                                 {
-                                    price = "Currently out of stock";
+                                    price = OutOfStock;
                                 }
-                                else if (availNode.InnerText == "現在お取り扱いできません")
+                                else if (availNode.InnerText == CurrentlyUnavailableJPN)
                                 {
-                                    price = "Currently unavailable";
+                                    price = CurrentlyUnavailable;
                                 }
                                 else
                                 {
