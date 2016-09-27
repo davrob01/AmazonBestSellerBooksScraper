@@ -55,13 +55,13 @@ namespace AmazonBestSellers
             {
                 outputDirectory = "Results\\";
                 string[,] urls = new string[,]{
-                    {"http://www.amazon.com", "/best-sellers-books-Amazon/zgbs/books/", "US Books"},
-                    {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/", "JPN Books"},
-                    {"http://www.amazon.co.uk", "/gp/bestsellers/books/", "UK Books"},
-                    {"http://www.amazon.it", "/gp/bestsellers/books/", "IT Books"},
-                    {"http://www.amazon.fr", "/gp/bestsellers/english-books/", "FR Books"},
-                    {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/", "DE Books"},
-                    {"http://www.amazon.es", "/gp/bestsellers/foreign-books/", "ES Books"}
+                    {"https://www.amazon.com", "/best-sellers-books-Amazon/zgbs/books/", "US Books"},
+                    {"https://www.amazon.co.jp", "/gp/bestsellers/english-books/", "JPN Books"},
+                    {"https://www.amazon.co.uk", "/gp/bestsellers/books/", "UK Books"},
+                    {"https://www.amazon.it", "/gp/bestsellers/books/", "IT Books"},
+                    {"https://www.amazon.fr", "/gp/bestsellers/english-books/", "FR Books"},
+                    {"https://www.amazon.de", "/gp/bestsellers/books-intl-de/", "DE Books"},
+                    {"https://www.amazon.es", "/gp/bestsellers/foreign-books/", "ES Books"}
                 };
 
                 await StartProcess(urls, false);
@@ -207,13 +207,13 @@ namespace AmazonBestSellers
                 {
                     outputDirectory = "Results\\Test\\";
                     string[,] urls = new string[,]{
-                        {"http://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books - Arts & Photography"},
-                        {"http://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books - Computers & Technology"},
-                        {"http://www.amazon.co.uk", "/Best-Sellers-Books-Sports-Hobbies-Games/zgbs/books/55/", "UK Books - Sports, Hobbies & Games"},
-                        {"http://www.amazon.it", "/gp/bestsellers/books/508745031/", "IT Books - Religione e spiritualita"},
-                        {"http://www.amazon.fr", "/gp/bestsellers/english-books/80179011/", "FR Books - Health, Mind & Body"},
-                        {"http://www.amazon.de", "/gp/bestsellers/books-intl-de/65108011/", "DE Books - Outdoor, Umwelt & Natur"},
-                        {"http://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books - Deporte"}
+                        {"https://www.amazon.com", "/Best-Sellers-Books-Arts-Photography/zgbs/books/1/", "US Books - Arts & Photography"},
+                        {"https://www.amazon.co.jp", "/gp/bestsellers/english-books/2634770051/", "JPN Books - Computers & Technology"},
+                        {"https://www.amazon.co.uk", "/Best-Sellers-Books-Sports-Hobbies-Games/zgbs/books/55/", "UK Books - Sports, Hobbies & Games"},
+                        {"https://www.amazon.it", "/gp/bestsellers/books/508745031/", "IT Books - Religione e spiritualita"},
+                        {"https://www.amazon.fr", "/gp/bestsellers/english-books/80179011/", "FR Books - Health, Mind & Body"},
+                        {"https://www.amazon.de", "/gp/bestsellers/books-intl-de/65108011/", "DE Books - Outdoor, Umwelt & Natur"},
+                        {"https://www.amazon.es", "/gp/bestsellers/foreign-books/903313031/", "ES Books - Deporte"}
                     };
 
                     await StartProcess(urls, true);
