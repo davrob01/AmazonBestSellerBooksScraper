@@ -39,8 +39,15 @@ namespace AmazonBestSellers
                     }
                     else
                     {
-                        downloadTasks.Add(RetrieveCategoryData(_URL, page, 0));
-                        downloadTasks.Add(RetrieveCategoryData(_URL, page, 1));
+                        if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
+                        {
+                            downloadTasks.Add(RetrieveCategoryData(_URL, page, 0));
+                            downloadTasks.Add(RetrieveCategoryData(_URL, page, 1));
+                        }
+                        else
+                        {
+                            downloadTasks.Add(RetrieveCategoryData(_URL, page));
+                        }
                     }
                 }
 
@@ -66,8 +73,15 @@ namespace AmazonBestSellers
                                 }
                                 else
                                 {
-                                    downloadTasks.Add(RetrieveCategoryData(categoryURL, page, 0));
-                                    downloadTasks.Add(RetrieveCategoryData(categoryURL, page, 1));
+                                    if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
+                                    {
+                                        downloadTasks.Add(RetrieveCategoryData(categoryURL, page, 0));
+                                        downloadTasks.Add(RetrieveCategoryData(categoryURL, page, 1));
+                                    }
+                                    else
+                                    {
+                                        downloadTasks.Add(RetrieveCategoryData(categoryURL, page));
+                                    }
                                 }
                             }
                         }
@@ -109,6 +123,10 @@ namespace AmazonBestSellers
                 {
                     url = string.Format("{0}?pg=1", categoryURL); // page 1 we get full page so we can get the sub categories
                 }
+                else if(qAboveFold == null)
+                {
+                    url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1", categoryURL, qPage); // ajax page
+                }
                 else
                 {
                     url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1&isAboveTheFold={2}", categoryURL, qPage, qAboveFold); // ajax page
@@ -146,17 +164,19 @@ namespace AmazonBestSellers
                         }
                     }
                 }
-                var itemLinks = doc.DocumentNode.SelectNodes("//div[@class='zg_title']//a"); // determine all the books on the page by checking for this html
+
+                var itemLinks = doc.DocumentNode.SelectNodes("//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"); // determine all the books on the page by checking for this html
 
                 if (itemLinks != null)
                 {
                     int tempBooks = 0;
                     StringBuilder tempStrBuilder = new StringBuilder();
 
-                    foreach (HtmlNode node in itemLinks)
+                    foreach (HtmlNode node in itemLinks.Where(x => x.ChildNodes.Count <= 2)) // we only look at links matching child node criteria because the rest are irrelevant (they are links from the "More to Explore" section of the page)
                     {
                         string link = node.GetAttributeValue("href", "").Trim();
-                        string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0]; // parse the link to get the ISBN
+                        string[] split = link.Split(new string[] { "/ref=" }, StringSplitOptions.None)[0].Split('/');
+                        string ISBN = split[split.Length - 1]; // parse the link to get the ISBN
 
                         tempStrBuilder.AppendLine(ISBN);
                         tempBooks++;
@@ -166,6 +186,13 @@ namespace AmazonBestSellers
                     {
                         _ISBNs.Add(tempStrBuilder.ToString());
                     }
+                }
+                else
+                {
+                    // no books found... did we land on a Captcha page?
+                    var titleNode = doc.DocumentNode.SelectSingleNode("//title");
+                    if (titleNode != null && (titleNode.InnerText.ToUpper().Contains("AMAZON CAPTCHA") || titleNode.InnerText.ToUpper().Contains("BOT CHECK")))
+                        throw new Exception("No books found. Landed on Captcha");
                 }
 
                 /*

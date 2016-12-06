@@ -51,8 +51,15 @@ namespace AmazonBestSellers
                     }
                     else
                     {
-                        downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 0));
-                        downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 1));
+                        if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
+                        {
+                            downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 0));
+                            downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 1));
+                        }
+                        else
+                        {
+                            downloadTasks.Add(rootCategory.RetrieveCategoryData(page));
+                        }
                     }
                 }
                 _categories.Add(rootCategory);
@@ -81,8 +88,15 @@ namespace AmazonBestSellers
                                 }
                                 else
                                 {
-                                    downloadTasks.Add(category.RetrieveCategoryData(page, 0));
-                                    downloadTasks.Add(category.RetrieveCategoryData(page, 1));
+                                    if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
+                                    {
+                                        downloadTasks.Add(category.RetrieveCategoryData(page, 0));
+                                        downloadTasks.Add(category.RetrieveCategoryData(page, 1));
+                                    }
+                                    else
+                                    {
+                                        downloadTasks.Add(category.RetrieveCategoryData(page));
+                                    }
                                 }
                             }
                         }

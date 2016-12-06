@@ -18,9 +18,9 @@ namespace AmazonBestSellers
         private string _URL;
         private Book[] _books;
 
-        private static readonly string XPathItemLinks = "//div[@class='zg_title']//a";
-        private static readonly string XPathPrice = "..//..//*[@class='price']";
-        private static readonly string XPathAvailability = "..//..//div[@class='zg_availability']";
+        private static readonly string XPathItemLinks = "//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"; // we have to exclude links for product review pages
+        private static readonly string XPathPrice = "..//*[contains(@class,'price')]";
+        private static readonly string XPathAvailability = "..//*[contains(@class,'avail')]";
 
         private static readonly string OutOfStock = "Currently out of stock";
         private static readonly string CurrentlyUnavailable = "Currently unavailable";
@@ -59,9 +59,11 @@ namespace AmazonBestSellers
         /// <summary>
         /// Scrapes all book data from a page within this category. For each category, books are collected from 9 total URLs. 1 URL for page 1 and 8 URLs for pages 2 thru 5. Even  
         /// though more URLs are requested for pages 2 thru 5, the total bandwidth consumed is still lower because each ajax page is very small compared to a normal page.
+        /// December 2016 Update: Ajax URLs used for pages 2 thru 5 now display all 20 items - Amazon is no longer using the 'isAboveTheFold' query string to divide items into
+        /// sub pages for the ajax pages, except in the Japan domain.
         /// </summary>
         /// <param name="qPage">The page number used in the query string.</param>
-        /// <param name="qAboveFold">Pages 2 through 5 are retrieved via Amazon's ajax urls. But they are divided into two sub pages per page. This query string
+        /// <param name="qAboveFold">Pages 2 through 5 are retrieved via Amazon's ajax urls. But they are divided into two sub pages per page (only applies to Japan domain). This query string
         /// indicates which sub page is being retrieved.</param>
         /// <returns>An enumerable list of sub categories found on the page. Subcategories are only checked on page 1. For the other pages, null is returned.</returns>
         public async Task<IEnumerable<Category>> RetrieveCategoryData(int qPage, int? qAboveFold = null)
@@ -72,6 +74,10 @@ namespace AmazonBestSellers
                 if(qPage == 1)
                 {
                     url = string.Format("{0}?pg=1", _URL); // page 1 we get full page so we can get the sub categories
+                }
+                else if (qAboveFold == null)
+                {
+                    url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1", _URL, qPage); // ajax page
                 }
                 else
                 {
@@ -143,7 +149,7 @@ namespace AmazonBestSellers
                     }
                     int tempBooks = 0;
 
-                    foreach (HtmlNode node in itemLinks)
+                    foreach (HtmlNode node in itemLinks.Where(x => x.ChildNodes.Count <= 2)) // we only look at links matching child node criteria because the rest are irrelevant (they are links from the "More to Explore" section of the page)
                     {
                         string price = "N/A";
                         HtmlNode priceNode = node.SelectSingleNode(XPathPrice);
@@ -173,8 +179,18 @@ namespace AmazonBestSellers
                             }
                         }
                         string link = node.GetAttributeValue("href", "").Trim();
-                        string ISBN = link.Split(new string[] { "/dp/" }, StringSplitOptions.None)[1].Split('/')[0]; // parse the link to get the ISBN
-                        string title = node.InnerText;
+                        string[] split = link.Split(new string[] { "/ref=" }, StringSplitOptions.None)[0].Split('/');
+                        string ISBN = split[split.Length - 1]; // parse the link to get the ISBN
+                        string title = "";
+                        var fullTitleNode = node.SelectSingleNode(".//span[@title]");
+                        if(fullTitleNode != null)
+                        {
+                            title = fullTitleNode.GetAttributeValue("title", "").Trim();
+                        }
+                        else
+                        {
+                            title = node.InnerText;
+                        }
 
                         Books[rank - 1] = new Book(title, ISBN, price);
                         tempBooks++;
@@ -182,6 +198,13 @@ namespace AmazonBestSellers
                         rank++;
                     }
                     Counter.IncrementBooksAdded(tempBooks);
+                }
+                else
+                {
+                    // no books found... did we land on a Captcha page?
+                    var titleNode = doc.DocumentNode.SelectSingleNode("//title");
+                    if (titleNode != null && (titleNode.InnerText.ToUpper().Contains("AMAZON CAPTCHA") || titleNode.InnerText.ToUpper().Contains("BOT CHECK")))
+                        throw new Exception("No books found. Landed on Captcha");
                 }
                 
                 /*
