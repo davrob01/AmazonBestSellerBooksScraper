@@ -15,12 +15,7 @@ This program scrapes Amazon to get all the ISBNs of the top 100 Best Selling boo
 The following websites are included in the scraping process:
 
 https://www.amazon.com/best-sellers-books-Amazon/zgbs/books/
-https://www.amazon.co.jp/gp/bestsellers/english-books/
 https://www.amazon.co.uk/gp/bestsellers/books/
-https://www.amazon.it/gp/bestsellers/books/
-https://www.amazon.fr/gp/bestsellers/english-books/
-https://www.amazon.de/gp/bestsellers/books-intl-de/
-https://www.amazon.es/gp/bestsellers/foreign-books/
 
 -------------------------------------
 SYSTEM REQUIREMENTS:
