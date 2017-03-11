@@ -87,6 +87,7 @@ namespace AmazonBestSellers
                 HtmlDocument doc = null;
                 bool loaded = false;
                 int attempts = 0;
+                HtmlNodeCollection itemLinks = null;
                 while (attempts < 5 && loaded == false)
                 {
                     try
@@ -116,6 +117,42 @@ namespace AmazonBestSellers
                                 doc.Load(stream, encoding);
                             }
                         }
+                        // delete nodes with extra links we do not want
+                        // they are links from the "More to Explore" section of the page found in the div with id='zg_col2'
+                        if(qPage == 1)
+                        {
+                            var removeNode = doc.DocumentNode.SelectSingleNode("//div[@id='zg_col2']");
+                            if(removeNode != null)
+                            {
+                                removeNode.Remove();
+                            }
+                            else
+                            {
+                                var removeNodes = doc.DocumentNode.SelectNodes("//div[@class='zg_more']"); // alternative method in case 'zg_col2' is not found
+                                foreach (HtmlNode node in removeNodes)
+                                {
+                                    node.Remove();
+                                }
+                            }
+                        }
+
+                        itemLinks = doc.DocumentNode.SelectNodes(XPathItemLinks); // determine all the books on the page by checking for this html
+                        if(itemLinks == null)
+                        {
+                            // no books found... did we land on a Captcha page?
+                            var titleNode = doc.DocumentNode.SelectSingleNode("//title");
+                            if (titleNode != null && (titleNode.InnerText.ToUpper().Contains("AMAZON CAPTCHA") || titleNode.InnerText.ToUpper().Contains("BOT CHECK")))
+                                throw new Exception("No books found. Landed on Captcha");
+                            else
+                            {
+                                // we only throw an exception if the page is 1
+                                // because on other pages it is possible that there really are no books because not all sub categories have 100 books
+                                if(qPage == 1)
+                                    throw new Exception("No books found on page");
+                                else
+                                    return null; // do not attempt to retry or show error if the page greater than 1
+                            }
+                        }
                         loaded = true; // if we get here with no exception, then it was loaded successfully
                     }     
                     catch (Exception ex)
@@ -132,80 +169,69 @@ namespace AmazonBestSellers
                         }
                     }
                 }
-                var itemLinks = doc.DocumentNode.SelectNodes(XPathItemLinks); // determine all the books on the page by checking for this html
-
-                if(itemLinks != null)
+                
+                int rank = 1;
+                if (qPage > 1) // rank starting number will be different for other pages
                 {
-                    int rank = 1;
-                    if (qPage > 1) // rank starting number will be different for other pages
-                    {
-                        rank = ((qPage - 1) * 20) + 1;
+                    rank = ((qPage - 1) * 20) + 1;
 
-                        if (qAboveFold == 0)
-                        {
-                            rank += 3; // there are only 3 items on the first ajax page, hopefully that is true for every category
-                            // consider using the rank number field on the html page
-                        }
+                    if (qAboveFold == 0)
+                    {
+                        rank += 3; // there are only 3 items on the first ajax page, hopefully that is true for every category
+                        // consider using the rank number field on the html page
                     }
-                    int tempBooks = 0;
+                }
+                int tempBooks = 0;
 
-                    foreach (HtmlNode node in itemLinks.Where(x => x.ChildNodes.Count <= 2)) // we only look at links matching child node criteria because the rest are irrelevant (they are links from the "More to Explore" section of the page)
+                foreach (HtmlNode node in itemLinks)
+                {
+                    string price = "N/A";
+                    HtmlNode priceNode = node.SelectSingleNode(XPathPrice);
+                    if(priceNode != null)
                     {
-                        string price = "N/A";
-                        HtmlNode priceNode = node.SelectSingleNode(XPathPrice);
-                        if(priceNode != null)
+                        price = priceNode.InnerText;
+                    }
+                    else
+                    {
+                        // no price displayed, check availability
+                        HtmlNode availNode = node.SelectSingleNode(XPathAvailability);
+                        if (availNode != null)
                         {
-                            price = priceNode.InnerText;
-                        }
-                        else
-                        {
-                            // no price displayed, check availability
-                            HtmlNode availNode = node.SelectSingleNode(XPathAvailability);
-                            if (availNode != null)
+                            // translate Japanese text
+                            if (availNode.InnerText == OutOfStockJPN)
                             {
-                                // translate Japanese text
-                                if (availNode.InnerText == OutOfStockJPN)
-                                {
-                                    price = OutOfStock;
-                                }
-                                else if (availNode.InnerText == CurrentlyUnavailableJPN)
-                                {
-                                    price = CurrentlyUnavailable;
-                                }
-                                else
-                                {
-                                    price = availNode.InnerText;
-                                }
+                                price = OutOfStock;
+                            }
+                            else if (availNode.InnerText == CurrentlyUnavailableJPN)
+                            {
+                                price = CurrentlyUnavailable;
+                            }
+                            else
+                            {
+                                price = availNode.InnerText;
                             }
                         }
-                        string link = node.GetAttributeValue("href", "").Trim();
-                        string[] split = link.Split(new string[] { "/ref=" }, StringSplitOptions.None)[0].Split('/');
-                        string ISBN = split[split.Length - 1]; // parse the link to get the ISBN
-                        string title = "";
-                        var fullTitleNode = node.SelectSingleNode(".//span[@title]");
-                        if(fullTitleNode != null)
-                        {
-                            title = fullTitleNode.GetAttributeValue("title", "").Trim();
-                        }
-                        else
-                        {
-                            title = node.InnerText;
-                        }
-
-                        Books[rank - 1] = new Book(title, ISBN, price);
-                        tempBooks++;
-
-                        rank++;
                     }
-                    Counter.IncrementBooksAdded(tempBooks);
+                    string link = node.GetAttributeValue("href", "").Trim();
+                    string[] split = link.Split(new string[] { "/ref=" }, StringSplitOptions.None)[0].Split('/');
+                    string ISBN = split[split.Length - 1]; // parse the link to get the ISBN
+                    string title = "";
+                    var fullTitleNode = node.SelectSingleNode(".//span[@title]");
+                    if(fullTitleNode != null)
+                    {
+                        title = fullTitleNode.GetAttributeValue("title", "").Trim();
+                    }
+                    else
+                    {
+                        title = node.InnerText.Trim();
+                    }
+
+                    Books[rank - 1] = new Book(title, ISBN, price);
+                    tempBooks++;
+
+                    rank++;
                 }
-                else
-                {
-                    // no books found... did we land on a Captcha page?
-                    var titleNode = doc.DocumentNode.SelectSingleNode("//title");
-                    if (titleNode != null && (titleNode.InnerText.ToUpper().Contains("AMAZON CAPTCHA") || titleNode.InnerText.ToUpper().Contains("BOT CHECK")))
-                        throw new Exception("No books found. Landed on Captcha");
-                }
+                Counter.IncrementBooksAdded(tempBooks);
                 
                 /*
                 // this code checks for missing books. Amazon will sometimes incorrectly deliver a page in which there will be a rank number but no item.

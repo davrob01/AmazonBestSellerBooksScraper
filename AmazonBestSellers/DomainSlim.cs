@@ -19,6 +19,8 @@ namespace AmazonBestSellers
         private List<string> _ISBNs;
         private object locker = new object();
 
+        private static readonly string XPathItemLinks = "//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"; // we have to exclude links for product review pages
+
         public DomainSlim(string url)
         {
             _URL = url;
@@ -135,6 +137,7 @@ namespace AmazonBestSellers
                 HtmlDocument doc = null;
                 bool loaded = false;
                 int attempts = 0;
+                HtmlNodeCollection itemLinks = null;
                 while (attempts < 5 && loaded == false)
                 {
                     try
@@ -146,6 +149,42 @@ namespace AmazonBestSellers
                             {
                                 doc = new HtmlDocument();
                                 doc.Load(stream, System.Text.Encoding.GetEncoding("ISO-8859-1"));
+                            }
+                        }
+                        // delete nodes with extra links we do not want
+                        // they are links from the "More to Explore" section of the page found in the div with id='zg_col2'
+                        if (qPage == 1)
+                        {
+                            var removeNode = doc.DocumentNode.SelectSingleNode("//div[@id='zg_col2']");
+                            if (removeNode != null)
+                            {
+                                removeNode.Remove();
+                            }
+                            else
+                            {
+                                var removeNodes = doc.DocumentNode.SelectNodes("//div[@class='zg_more']"); // alternative method in case 'zg_col2' is not found
+                                foreach (HtmlNode node in removeNodes)
+                                {
+                                    node.Remove();
+                                }
+                            }
+                        }
+
+                        itemLinks = doc.DocumentNode.SelectNodes(XPathItemLinks); // determine all the books on the page by checking for this html
+                        if (itemLinks == null)
+                        {
+                            // no books found... did we land on a Captcha page?
+                            var titleNode = doc.DocumentNode.SelectSingleNode("//title");
+                            if (titleNode != null && (titleNode.InnerText.ToUpper().Contains("AMAZON CAPTCHA") || titleNode.InnerText.ToUpper().Contains("BOT CHECK")))
+                                throw new Exception("No books found. Landed on Captcha");
+                            else
+                            {
+                                // we only throw an exception if the page is 1
+                                // because on other pages it is possible that there really are no books because not all sub categories have 100 books
+                                if (qPage == 1)
+                                    throw new Exception("No books found on page");
+                                else
+                                    return null; // do not attempt to retry or show error if the page greater than 1
                             }
                         }
                         loaded = true; // if we get here with no exception, then it was loaded successfully
@@ -165,34 +204,22 @@ namespace AmazonBestSellers
                     }
                 }
 
-                var itemLinks = doc.DocumentNode.SelectNodes("//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"); // determine all the books on the page by checking for this html
+                int tempBooks = 0;
+                StringBuilder tempStrBuilder = new StringBuilder();
 
-                if (itemLinks != null)
+                foreach (HtmlNode node in itemLinks)
                 {
-                    int tempBooks = 0;
-                    StringBuilder tempStrBuilder = new StringBuilder();
+                    string link = node.GetAttributeValue("href", "").Trim();
+                    string[] split = link.Split(new string[] { "/ref=" }, StringSplitOptions.None)[0].Split('/');
+                    string ISBN = split[split.Length - 1]; // parse the link to get the ISBN
 
-                    foreach (HtmlNode node in itemLinks.Where(x => x.ChildNodes.Count <= 2)) // we only look at links matching child node criteria because the rest are irrelevant (they are links from the "More to Explore" section of the page)
-                    {
-                        string link = node.GetAttributeValue("href", "").Trim();
-                        string[] split = link.Split(new string[] { "/ref=" }, StringSplitOptions.None)[0].Split('/');
-                        string ISBN = split[split.Length - 1]; // parse the link to get the ISBN
-
-                        tempStrBuilder.AppendLine(ISBN);
-                        tempBooks++;
-                    }
-                    Counter.IncrementBooksAdded(tempBooks);
-                    lock (locker)
-                    {
-                        _ISBNs.Add(tempStrBuilder.ToString());
-                    }
+                    tempStrBuilder.AppendLine(ISBN);
+                    tempBooks++;
                 }
-                else
+                Counter.IncrementBooksAdded(tempBooks);
+                lock (locker)
                 {
-                    // no books found... did we land on a Captcha page?
-                    var titleNode = doc.DocumentNode.SelectSingleNode("//title");
-                    if (titleNode != null && (titleNode.InnerText.ToUpper().Contains("AMAZON CAPTCHA") || titleNode.InnerText.ToUpper().Contains("BOT CHECK")))
-                        throw new Exception("No books found. Landed on Captcha");
+                    _ISBNs.Add(tempStrBuilder.ToString());
                 }
 
                 /*
