@@ -80,13 +80,13 @@ With this option checked, the scraping process will take a bit longer and consum
 
 Example when viewing in Excel:
 
-Category	                  Rank	ISBN	    Price	Author	        Title
-US Books - Arts & Photography	1	0804189765	$17.98 	George W. Bush	Portraits of Courage: A Commander in Chief's Tribute to America's Warriors
-US Books - Arts & Photography	2	B01IW9TM5O	$21.95 	Trevor Noah	    Born a Crime: Stories from a South African Childhood
-US Books - Arts & Photography	3	B0017SYOTM	$1.99 	Benjamin Blech	The Sistine Secrets: Michelangelo's Forbidden Messages in the Heart of the Vatican
-US Books - Arts & Photography	4	080241270X	$9.59 	Gary Chapman	The 5 Love Languages: The Secret to Love that Lasts
-US Books - Arts & Photography	5	1607747308	$10.19 	Marie Kondo	    The Life-Changing Magic of Tidying Up: The Japanese Art of Decluttering and Organizing
-US Books - Arts & Photography	6	B01BEGV5DY	$2.99 	Grace Bonney	In the Company of Women: Inspiration and Advice from over 100 Makers, Artists, and Entrepreneurs
+Category                      Rank  ISBN        Price   Author          Title
+US Books - Arts & Photography	1	0804189765	$17.98 	George W. Bush	Portraits of Courage: A Commander...
+US Books - Arts & Photography	2	B01IW9TM5O	$21.95 	Trevor Noah	    Born a Crime: Stories from a South...
+US Books - Arts & Photography	3	B0017SYOTM	$1.99 	Benjamin Blech	The Sistine Secrets: Michelangelo's...
+US Books - Arts & Photography	4	080241270X	$9.59 	Gary Chapman	The 5 Love Languages: The Secret...
+US Books - Arts & Photography	5	1607747308	$10.19 	Marie Kondo	    The Life-Changing Magic of Tidying...
+US Books - Arts & Photography	6	B01BEGV5DY	$2.99 	Grace Bonney	In the Company of Women: Inspiration...
 
 -------------------------------------
 ADVANCED OPTIONS:
