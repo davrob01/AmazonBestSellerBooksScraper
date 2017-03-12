@@ -9,6 +9,7 @@ namespace AmazonBestSellers
     public class Book
     {
         private string _title;
+        private string _author;
         private string _ISBN;
         private string _price;
 
@@ -17,6 +18,13 @@ namespace AmazonBestSellers
             get
             {
                 return _title;
+            }
+        }
+        public string Author
+        {
+            get
+            {
+                return _author;
             }
         }
         public string ISBN
@@ -34,9 +42,10 @@ namespace AmazonBestSellers
             }
         }
 
-        public Book(string title, string isbn, string price)
+        public Book(string title, string author, string isbn, string price)
         {
             _title = title;
+            _author = author;
             _ISBN = isbn;
             _price = price;
         }

@@ -21,6 +21,7 @@ namespace AmazonBestSellers
         private static readonly string XPathItemLinks = "//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"; // we have to exclude links for product review pages
         private static readonly string XPathPrice = "..//*[contains(@class,'price')]";
         private static readonly string XPathAvailability = "..//*[contains(@class,'avail')]";
+        private static readonly string XPathAuthor = "./following-sibling::*[1][@class='a-row a-size-small' and ./*[not(contains(@class,'a-color-secondary'))]]";
 
         private static readonly string OutOfStock = "Currently out of stock";
         private static readonly string CurrentlyUnavailable = "Currently unavailable";
@@ -225,8 +226,14 @@ namespace AmazonBestSellers
                     {
                         title = node.InnerText.Trim();
                     }
-
-                    Books[rank - 1] = new Book(title, ISBN, price);
+                    // get author if possible
+                    string author = "N/A";
+                    var authorNode = node.SelectSingleNode(XPathAuthor);
+                    if (authorNode != null)
+                    {
+                        author = authorNode.InnerText;
+                    }
+                    Books[rank - 1] = new Book(title, author, ISBN, price);
                     tempBooks++;
 
                     rank++;

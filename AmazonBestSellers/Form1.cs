@@ -138,7 +138,7 @@ namespace AmazonBestSellers
                         using (StreamWriter writerISBN = new StreamWriter(fileName1, true))
                         using (StreamWriter writer = new StreamWriter(string.Format("{0}{1}{2}", outputDirectory, name, fileName2), false, encoding))
                         {
-                            writer.WriteLine(string.Format("Category,Rank,ISBN,{0},Title", priceColumnHeader));
+                            writer.WriteLine(string.Format("Category,Rank,ISBN,{0},Author,Title", priceColumnHeader));
                             IEnumerable<Category> categoriesByName = domain.Categories.OrderBy(x => x.Name);
                             foreach (Category category in categoriesByName)
                             {
@@ -166,7 +166,7 @@ namespace AmazonBestSellers
                                                 }
                                             }
                                         }
-                                        writer.WriteLine("\"{0}\",\"{1}\",=\"{2}\",\"{3}\",\"{4}\"", category.Name, index + 1, currentBook.ISBN, price, currentBook.Title);
+                                        writer.WriteLine("\"{0}\",\"{1}\",=\"{2}\",\"{3}\",\"{4}\",\"{5}\"", category.Name, index + 1, currentBook.ISBN, price, currentBook.Author, currentBook.Title);
 
                                         writerISBN.WriteLine(currentBook.ISBN);
                                     }

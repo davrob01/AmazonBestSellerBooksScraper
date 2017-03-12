@@ -47,7 +47,7 @@ INSTRUCTIONS:
 
 Note: Depending on your internet connection, and system specs, the process may take between 1 to 3 hours.
 
-* You can optionally do a quick test run via the "Test Run" button. About 104000 books are scraped in a successful test run. This test serves to verify you can run the process and also gives you an example of results. 
+* You can optionally do a quick test run via the "Test Run" button. About 53500 books are scraped in a successful test run. This test serves to verify you can run the process and also gives you an example of results. 
 
 -------------------------------------
 OUTPUT:
@@ -72,7 +72,7 @@ OPTIONAL OUTPUT - MORE DETAIL - OPEN WITH EXCEL:
 
 By selecting the corresponding check box, additional output files are created, one per domain, in the CSV Format (Comma-Separated-Value). They contain the following: 
 
-Book category, Rank, ISBN, price and title is displayed. One record per line.
+Book category, Rank, ISBN, price, author and title is displayed. One record per line.
 
 This file was designed for opening in Microsoft Excel.
 
@@ -80,14 +80,13 @@ With this option checked, the scraping process will take a bit longer and consum
 
 Example when viewing in Excel:
 
-Category                       Rank	ISBN        Price   Title
-US Books > Arts & Photography	1	0995056706  $7.45   Quieting Your Heart: 6-Month Bible-St...
-US Books > Arts & Photography	2	1522864741  $8.01   Calm the F*ck Down: An Irreverent Adu...
-US Books > Arts & Photography	3	0996275460  $7.24   Adult Coloring Books: A Coloring Book...
-US Books > Arts & Photography	4	0399542299  $9.29   Doctor Who Coloring Book
-US Books > Arts & Photography	5	B007V65PLA  $12.99  Argo: How the CIA and Hollywood Pulle...
-US Books > Arts & Photography	6	1516866746  $5.31   Adult Coloring Book: Butterflies and...
-	
+Category	                  Rank	ISBN	    Price	Author	        Title
+US Books - Arts & Photography	1	0804189765	$17.98 	George W. Bush	Portraits of Courage: A Commander in Chief's Tribute to America's Warriors
+US Books - Arts & Photography	2	B01IW9TM5O	$21.95 	Trevor Noah	    Born a Crime: Stories from a South African Childhood
+US Books - Arts & Photography	3	B0017SYOTM	$1.99 	Benjamin Blech	The Sistine Secrets: Michelangelo's Forbidden Messages in the Heart of the Vatican
+US Books - Arts & Photography	4	080241270X	$9.59 	Gary Chapman	The 5 Love Languages: The Secret to Love that Lasts
+US Books - Arts & Photography	5	1607747308	$10.19 	Marie Kondo	    The Life-Changing Magic of Tidying Up: The Japanese Art of Decluttering and Organizing
+US Books - Arts & Photography	6	B01BEGV5DY	$2.99 	Grace Bonney	In the Company of Women: Inspiration and Advice from over 100 Makers, Artists, and Entrepreneurs
 
 -------------------------------------
 ADVANCED OPTIONS:
