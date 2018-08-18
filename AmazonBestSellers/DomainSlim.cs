@@ -19,7 +19,8 @@ namespace AmazonBestSellers
         private List<string> _ISBNs;
         private object locker = new object();
 
-        private static readonly string XPathItemLinks = "//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"; // we have to exclude links for product review pages
+        private static readonly short NumberOfPages = 2;
+        private static readonly string XPathItemLinks = "//li[@class='zg-item-immersion']//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"; // we have to exclude links for product review pages
 
         public DomainSlim(string url)
         {
@@ -33,24 +34,9 @@ namespace AmazonBestSellers
             {
                 List<Task<IEnumerable<string>>> downloadTasks = new List<Task<IEnumerable<string>>>();
 
-                for (int page = 1; page <= 5; page++)
+                for (int page = 1; page <= NumberOfPages; page++)
                 {
-                    if (page == 1)
-                    {
-                        downloadTasks.Add(RetrieveCategoryData(_URL, page));
-                    }
-                    else
-                    {
-                        if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
-                        {
-                            downloadTasks.Add(RetrieveCategoryData(_URL, page, 0));
-                            downloadTasks.Add(RetrieveCategoryData(_URL, page, 1));
-                        }
-                        else
-                        {
-                            downloadTasks.Add(RetrieveCategoryData(_URL, page));
-                        }
-                    }
+                    downloadTasks.Add(RetrieveCategoryData(_URL, page));
                 }
 
                 while (downloadTasks.Count > 0)
@@ -67,24 +53,9 @@ namespace AmazonBestSellers
 
                         foreach (string categoryURL in subCategories)
                         {
-                            for (int page = 5; page >= 1; --page)
+                            for (int page = NumberOfPages; page >= 1; --page)
                             {
-                                if (page == 1)
-                                {
-                                    downloadTasks.Add(RetrieveCategoryData(categoryURL, page));
-                                }
-                                else
-                                {
-                                    if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
-                                    {
-                                        downloadTasks.Add(RetrieveCategoryData(categoryURL, page, 0));
-                                        downloadTasks.Add(RetrieveCategoryData(categoryURL, page, 1));
-                                    }
-                                    else
-                                    {
-                                        downloadTasks.Add(RetrieveCategoryData(categoryURL, page));
-                                    }
-                                }
+                                downloadTasks.Add(RetrieveCategoryData(categoryURL, page));
                             }
                         }
                     }
@@ -151,22 +122,16 @@ namespace AmazonBestSellers
                                 doc.Load(stream, System.Text.Encoding.GetEncoding("ISO-8859-1"));
                             }
                         }
+                        // update 8.18.2018 - we can probably get rid of this logic below since we are now only looking for links under li[@class='zg-item-immersion'] 
+                        // and these links are not nested in li[@class='zg-item-immersion'], but keep for now
                         // delete nodes with extra links we do not want
-                        // they are links from the "More to Explore" section of the page found in the div with id='zg_col2'
+                        // they are links from the "recently viewed items" section of the page
                         if (qPage == 1)
                         {
-                            var removeNode = doc.DocumentNode.SelectSingleNode("//div[@id='zg_col2']");
+                            var removeNode = doc.DocumentNode.SelectSingleNode("//div[@id='rhf']");
                             if (removeNode != null)
                             {
                                 removeNode.Remove();
-                            }
-                            else
-                            {
-                                var removeNodes = doc.DocumentNode.SelectNodes("//div[@class='zg_more']"); // alternative method in case 'zg_col2' is not found
-                                foreach (HtmlNode node in removeNodes)
-                                {
-                                    node.Remove();
-                                }
                             }
                         }
 

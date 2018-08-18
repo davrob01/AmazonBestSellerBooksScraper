@@ -18,7 +18,10 @@ namespace AmazonBestSellers
         private string _URL;
         private Book[] _books;
 
-        private static readonly string XPathItemLinks = "//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"; // we have to exclude links for product review pages
+        private static readonly short ItemsPerPage = 50;
+
+        // update 8.18.2018 only select links within an <li> element with class zg-item-immersion - this avoid the links in 'Most Gifted' and 'Most Wished For' sections
+        private static readonly string XPathItemLinks = "//li[@class='zg-item-immersion']//a[@class='a-link-normal' and not(contains(@href,'/product-reviews/'))]"; // we have to exclude links for product review pages
         private static readonly string XPathPrice = "..//*[contains(@class,'price')]";
         private static readonly string XPathAvailability = "..//*[contains(@class,'avail')]";
         private static readonly string XPathAuthor = "./following-sibling::*[1][@class='a-row a-size-small' and ./*[not(contains(@class,'a-color-secondary'))]]";
@@ -71,19 +74,10 @@ namespace AmazonBestSellers
         {
             try
             {
+                // updat 8.18.2018 - Amazon no longer using ajax pages. At least not in US or UK Domains.
                 string url;
-                if(qPage == 1)
-                {
-                    url = string.Format("{0}?pg=1", _URL); // page 1 we get full page so we can get the sub categories
-                }
-                else if (qAboveFold == null)
-                {
-                    url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1", _URL, qPage); // ajax page
-                }
-                else
-                {
-                    url = string.Format("{0}?_encoding=UTF8&pg={1}&ajax=1&isAboveTheFold={2}", _URL, qPage, qAboveFold); // ajax page
-                }
+
+                url = string.Format("{0}?_encoding=UTF8&pg={1}", _URL, qPage);
 
                 HtmlDocument doc = null;
                 bool loaded = false;
@@ -118,22 +112,16 @@ namespace AmazonBestSellers
                                 doc.Load(stream, encoding);
                             }
                         }
+                        // update 8.18.2018 - we can probably get rid of this logic below since we are now only looking for links under li[@class='zg-item-immersion'] 
+                        // and these links are not nested in li[@class='zg-item-immersion'], but keep for now
                         // delete nodes with extra links we do not want
-                        // they are links from the "More to Explore" section of the page found in the div with id='zg_col2'
+                        // they are links from the "recently viewed items" section of the page
                         if(qPage == 1)
                         {
-                            var removeNode = doc.DocumentNode.SelectSingleNode("//div[@id='zg_col2']");
+                            var removeNode = doc.DocumentNode.SelectSingleNode("//div[@id='rhf']");
                             if(removeNode != null)
                             {
                                 removeNode.Remove();
-                            }
-                            else
-                            {
-                                var removeNodes = doc.DocumentNode.SelectNodes("//div[@class='zg_more']"); // alternative method in case 'zg_col2' is not found
-                                foreach (HtmlNode node in removeNodes)
-                                {
-                                    node.Remove();
-                                }
                             }
                         }
 
@@ -174,13 +162,7 @@ namespace AmazonBestSellers
                 int rank = 1;
                 if (qPage > 1) // rank starting number will be different for other pages
                 {
-                    rank = ((qPage - 1) * 20) + 1;
-
-                    if (qAboveFold == 0)
-                    {
-                        rank += 3; // there are only 3 items on the first ajax page, hopefully that is true for every category
-                        // consider using the rank number field on the html page
-                    }
+                    rank = ((qPage - 1) * ItemsPerPage) + 1;
                 }
                 int tempBooks = 0;
 

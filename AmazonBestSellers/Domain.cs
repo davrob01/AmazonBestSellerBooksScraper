@@ -15,6 +15,8 @@ namespace AmazonBestSellers
         private string _URL;
         private List<Category> _categories;
 
+        private static readonly short NumberOfPages = 2;
+
         public List<Category> Categories 
         { 
             get 
@@ -43,24 +45,9 @@ namespace AmazonBestSellers
                 List<Task<IEnumerable<Category>>> downloadTasks = new List<Task<IEnumerable<Category>>>();
 
                 // add a task for each page
-                for(int page = 1; page <= 5; page++)
+                for (int page = 1; page <= NumberOfPages; page++)
                 {
-                    if(page == 1)
-                    {
-                        downloadTasks.Add(rootCategory.RetrieveCategoryData(page));
-                    }
-                    else
-                    {
-                        if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
-                        {
-                            downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 0));
-                            downloadTasks.Add(rootCategory.RetrieveCategoryData(page, 1));
-                        }
-                        else
-                        {
-                            downloadTasks.Add(rootCategory.RetrieveCategoryData(page));
-                        }
-                    }
+                    downloadTasks.Add(rootCategory.RetrieveCategoryData(page));
                 }
                 _categories.Add(rootCategory);
 
@@ -80,24 +67,9 @@ namespace AmazonBestSellers
                         foreach (Category category in subCategories)
                         {
                             // add a task for each page
-                            for (int page = 5; page >= 1; --page)
+                            for (int page = NumberOfPages; page >= 1; --page)
                             {
-                                if (page == 1)
-                                {
-                                    downloadTasks.Add(category.RetrieveCategoryData(page));
-                                }
-                                else
-                                {
-                                    if (_URL.Contains("www.amazon.co.jp")) // the Japan domain is the only domain that still uses the 'isAboveTheFold' query string for its ajax pages
-                                    {
-                                        downloadTasks.Add(category.RetrieveCategoryData(page, 0));
-                                        downloadTasks.Add(category.RetrieveCategoryData(page, 1));
-                                    }
-                                    else
-                                    {
-                                        downloadTasks.Add(category.RetrieveCategoryData(page));
-                                    }
-                                }
+                                downloadTasks.Add(category.RetrieveCategoryData(page));
                             }
                         }
                         _categories.AddRange(subCategories); // update the list of subcategories in this domain
