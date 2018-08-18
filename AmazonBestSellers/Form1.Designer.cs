@@ -156,6 +156,8 @@ namespace AmazonBestSellers
             // chkDetail
             // 
             this.chkDetail.AutoSize = true;
+            this.chkDetail.Checked = true;
+            this.chkDetail.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkDetail.Location = new System.Drawing.Point(12, 180);
             this.chkDetail.Name = "chkDetail";
             this.chkDetail.Size = new System.Drawing.Size(245, 17);
