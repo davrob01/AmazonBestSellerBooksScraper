@@ -25,6 +25,8 @@ namespace AmazonBestSellers
         private static readonly string XPathPrice = "..//*[contains(@class,'price')]";
         private static readonly string XPathAvailability = "..//*[contains(@class,'avail')]";
         private static readonly string XPathAuthor = "./following-sibling::*[1][@class='a-row a-size-small' and ./*[not(contains(@class,'a-color-secondary'))]]";
+        private static readonly string XPathEdition = "..//span[@class='a-size-small a-color-secondary']";
+        private static readonly string XPathImage = ".//img";
 
         private static readonly string OutOfStock = "Currently out of stock";
         private static readonly string CurrentlyUnavailable = "Currently unavailable";
@@ -215,7 +217,24 @@ namespace AmazonBestSellers
                     {
                         author = authorNode.InnerText;
                     }
-                    Books[rank - 1] = new Book(title, author, ISBN, price);
+
+                    // get edition
+                    string edition = "";
+                    var editionNode = node.SelectSingleNode(XPathEdition);
+                    if(editionNode != null)
+                    {
+                        edition = editionNode.InnerText;
+                    }
+
+                    // get image URL
+                    string imageURL = "";
+                    var imageNode = node.SelectSingleNode(XPathImage);
+                    if(imageNode != null)
+                    {
+                        imageURL = imageNode.GetAttributeValue("src", "").Trim();
+                    }
+
+                    Books[rank - 1] = new Book(title, author, ISBN, price, edition, imageURL);
                     tempBooks++;
 
                     rank++;

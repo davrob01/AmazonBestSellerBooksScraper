@@ -12,6 +12,8 @@ namespace AmazonBestSellers
         private string _author;
         private string _ISBN;
         private string _price;
+        private string _edition;
+        private string _imageURL;
 
         public string Title
         {
@@ -42,12 +44,30 @@ namespace AmazonBestSellers
             }
         }
 
-        public Book(string title, string author, string isbn, string price)
+        public string Edition
+        {
+            get
+            {
+                return _edition;
+            }
+        }
+
+        public string ImageURL
+        {
+            get
+            {
+                return _imageURL;
+            }
+        }
+
+        public Book(string title, string author, string isbn, string price, string edition, string imageURL)
         {
             _title = title;
             _author = author;
             _ISBN = isbn;
             _price = price;
+            _edition = edition;
+            _imageURL = imageURL;
         }
     }
 }
